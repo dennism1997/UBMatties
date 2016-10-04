@@ -4,4 +4,5 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab1">UB Time</string>
     <string name="tab2">My Matties</string>
+    <string name="facebook_app_id">550169711846905</string>
 </resources>
