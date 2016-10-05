@@ -3,8 +3,9 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab1">UB Time</string>
-    <string name="tab2">My Matties</string>
+    <string name="tab3">My Matties</string>
     <string name="facebook_app_id">550169711846905</string>
     <string name="matties_image">Profile Picture</string>
     <string name="add_mattie_button">Add Mattie</string>
+    <string name="tab2">Sessions</string>
 </resources>

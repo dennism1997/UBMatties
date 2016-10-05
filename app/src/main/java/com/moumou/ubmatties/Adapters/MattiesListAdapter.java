@@ -15,7 +15,7 @@ import com.moumou.ubmatties.User;
 import java.util.ArrayList;
 
 /**
- * Created by MouMou on 04-10-16.
+ * Created by MouMou on 04-10-16
  */
 
 public class MattiesListAdapter extends ArrayAdapter<User> {
@@ -36,7 +36,6 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.matties_list_item, parent, false);
-            ;
         }
         name = (TextView) view.findViewById(R.id.matties_name);
         //image = (ImageView) view.findViewById(R.id.matties_image);
@@ -48,5 +47,11 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
 
         return view;
 
+    }
+
+    @Override
+    public void add(User object) {
+        super.add(object);
+        users.add(object);
     }
 }

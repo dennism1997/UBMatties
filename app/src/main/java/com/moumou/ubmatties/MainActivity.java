@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.moumou.ubmatties.Fragments.MattiesTabFragment;
+import com.moumou.ubmatties.Fragments.SessionsTabFragment;
 import com.moumou.ubmatties.Fragments.StudyTabFragment;
 
 import static com.moumou.ubmatties.globals.Globals.NUMBER_OF_TABS;
@@ -76,12 +77,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 switch (tab.getPosition()) {
+                    //TODO fix fab buttons
                     case 0:
                         findViewById(R.id.fab_study).setVisibility(View.VISIBLE);
                         findViewById(R.id.fab_matties).setVisibility(View.GONE);
                     case 1:
                         findViewById(R.id.fab_study).setVisibility(View.GONE);
-
                         findViewById(R.id.fab_matties).setVisibility(View.VISIBLE);
                 }
             }
@@ -101,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -115,11 +114,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            switch(position) {
+            switch (position) {
                 case 0:
                     return new StudyTabFragment();
                 case 1:
+                    return new SessionsTabFragment();
+                case 2:
                     return new MattiesTabFragment();
+
             }
             return null;
         }
@@ -137,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                     return getString(R.string.tab1);
                 case 1:
                     return getString(R.string.tab2);
+                case 2:
+                    return getString(R.string.tab3);
 
             }
             return null;

@@ -5,7 +5,7 @@ package com.moumou.ubmatties.globals;
  */
 
 public class Globals {
-    public static final int NUMBER_OF_TABS = 2;
+    public static final int NUMBER_OF_TABS = 3;
 
     private Globals(){
 
