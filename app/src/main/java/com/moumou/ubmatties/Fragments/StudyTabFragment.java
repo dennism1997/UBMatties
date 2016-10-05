@@ -47,13 +47,13 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab_study);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab_study_tab);
         fab.setOnClickListener(this);
-        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+        fab1 = (FloatingActionButton) view.findViewById(R.id.fab_coffee);
         fab1.setOnClickListener(this);
-        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+        fab2 = (FloatingActionButton) view.findViewById(R.id.fab_lunch);
         fab2.setOnClickListener(this);
-        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+        fab3 = (FloatingActionButton) view.findViewById(R.id.fab_study);
         fab3.setOnClickListener(this);
 
 
@@ -68,17 +68,17 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.fab_study:
+            case R.id.fab_study_tab:
 
                 animateFAB();
                 break;
-            case R.id.fab1:
+            case R.id.fab_coffee:
                 animateFAB();
                 break;
-            case R.id.fab2:
+            case R.id.fab_lunch:
                 animateFAB();
                 break;
-            case R.id.fab3:
+            case R.id.fab_study:
                 animateFAB();
                 break;
         }

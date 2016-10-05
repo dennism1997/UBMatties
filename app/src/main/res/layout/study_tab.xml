@@ -10,51 +10,53 @@
         android:id="@+id/textView" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab3"
+        android:id="@+id/fab_study"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="230dp"
+        android:layout_marginBottom="282dp"
         android:layout_gravity="bottom|end"
         android:layout_marginRight="@dimen/fab_margin"
         android:visibility="invisible"
         app:backgroundTint="@color/colorFab3"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_laptop_white_18dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab2"
+        android:id="@+id/fab_lunch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="160dp"
+        android:layout_marginBottom="212dp"
         android:layout_gravity="bottom|end"
         android:layout_marginRight="@dimen/fab_margin"
         android:visibility="invisible"
         app:backgroundTint="@color/colorFab2"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_food_apple_white_18dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab1"
+        android:id="@+id/fab_coffee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="90dp"
+        android:layout_marginBottom="142dp"
         android:layout_gravity="bottom|end"
         android:layout_marginRight="@dimen/fab_margin"
         android:visibility="invisible"
         app:elevation="6dp"
         app:backgroundTint="@color/colorFab1"
         app:pressedTranslationZ="12dp"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_coffee_white_18dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_white_24dp"
-        android:id="@+id/fab_study"
+        android:id="@+id/fab_study_tab"
         app:fabSize="normal"
+        android:layout_marginBottom="72dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp" />
+        android:layout_marginRight="@dimen/fab_margin"
+        app:borderWidth="0dp" />
 
 </android.support.design.widget.CoordinatorLayout>
