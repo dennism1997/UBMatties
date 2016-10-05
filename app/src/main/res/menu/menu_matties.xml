@@ -2,5 +2,5 @@
     <item
         android:id="@+id/option_facebook"
         android:orderInCategory="200"
-        android:title="@string/com_facebook_loginview_log_in_button" />
+        android:title="@string/facebook" />
 </menu>

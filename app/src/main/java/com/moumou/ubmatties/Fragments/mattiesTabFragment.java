@@ -36,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -49,7 +48,7 @@ public class MattiesTabFragment extends Fragment {
     private CallbackManager callbackManager;
     private LoginResult loginResult;
     private ProfileTracker profileTracker;
-    private Collection<String> permissionList;
+    private ArrayList<String> permissionList;
     private LinkedList<String> friendsList;
     private AlertDialog.Builder builder;
     private MenuItem facebookOption;
@@ -72,10 +71,10 @@ public class MattiesTabFragment extends Fragment {
 
         loginButton = (LoginButton) view.findViewById(R.id.login_button);
 
-        //loginButton.setReadPermissions(permissionList);
+        loginButton.setReadPermissions(permissionList);
 
         loginButton.setFragment(this);
-        loginButton.setReadPermissions("user_friends");
+        //loginButton.setReadPermissions("user_friends");
         //LoginManager.getInstance().logInWithReadPermissions(MattiesTabFragment.this, permissionList);
         handleLoginButton();
 
@@ -99,8 +98,7 @@ public class MattiesTabFragment extends Fragment {
         callbackManager = CallbackManager.Factory.create();
 
 
-        permissionList = new LinkedList<>();
-        permissionList.add("email");
+        permissionList = new ArrayList<>();
         permissionList.add("user_friends");
 
         friendsList = new LinkedList<>();
@@ -115,8 +113,9 @@ public class MattiesTabFragment extends Fragment {
                     loginButton.setVisibility(View.GONE);
                     readFriendsList(currentProfile);
                 } else {
+                    textView.setText("Not logged in");
                     loginButton.setVisibility(View.VISIBLE);
-                    facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
+                    //facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
                 }
             }
         };
@@ -141,7 +140,7 @@ public class MattiesTabFragment extends Fragment {
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.option_facebook) {
-            if (facebookOption.getTitle().equals(getString(R.string.com_facebook_loginview_log_out_action))) {
+            if (AccessToken.getCurrentAccessToken() != null) {
                 LoginManager.getInstance().logOut();
             } else {
                 handleLoginOption();
@@ -163,14 +162,6 @@ public class MattiesTabFragment extends Fragment {
 
         matties = new ArrayList<>();
         matties.add(u1);
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
         matties.add(new User("Tom Kempenaar"));
         matties.add(new User("Tom Kempenaar"));
         mattiesListAdapter = new MattiesListAdapter(getContext(), matties);
@@ -196,19 +187,22 @@ public class MattiesTabFragment extends Fragment {
         /* make the API call */
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/" + currentProfile.getId() + "",
+                "/" + currentProfile.getId() + "/user_friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                             /* handle the result */
                         try {
+                            System.out.println("\n f\nf\n");
+                            System.out.println("data we got");
+                            System.out.println(response.getRawResponse());
                             JSONArray jsonArrayFriends = response.getJSONObject().getJSONArray("data");
                             fillFriendsList(jsonArrayFriends);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (NullPointerException e) {
-                            showDialog("Can't connect to Facebook");
+                            showDialog("Can't load data of your friends");
                             e.printStackTrace();
                         }
                     }
@@ -240,15 +234,8 @@ public class MattiesTabFragment extends Fragment {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                textView.setText(
-
-                        "User ID: "
-                                + loginResult.getAccessToken().getUserId()
-                                + "\n" +
-                                "Auth Token: "
-                                + loginResult.getAccessToken().getToken()
-                );
-                facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
+                //textView.setText(loginResult.getAccessToken().getPermissions().toString());
+                //facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
                 //loginButton.setVisibility(View.GONE);
             }
 
