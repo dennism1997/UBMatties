@@ -1,12 +1,15 @@
 package com.moumou.ubmatties.Adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moumou.ubmatties.R;
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 public class MattiesListAdapter extends ArrayAdapter<User> {
 
     private ArrayList<User> users;
-    //private ImageView image;
+    private ImageView imageView;
     private TextView name;
     private Button button;
 
@@ -37,21 +40,23 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.matties_list_item, parent, false);
         }
+
+        User user = users.get(position);
         name = (TextView) view.findViewById(R.id.matties_name);
-        //image = (ImageView) view.findViewById(R.id.matties_image);
+        imageView = (ImageView) view.findViewById(R.id.matties_image);
         button = (Button) view.findViewById(R.id.matties_button);
 
-        name.setText(users.get(position).getName());
-        //.setImageResource(R.drawable.com_facebook_send_button_icon);
+        name.setText(user.getName());
+        if (user.getImage() == null) {
+            Bitmap bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.user32);
+            imageView.setImageBitmap(bmp);
+        } else {
+            imageView.setImageBitmap(user.getImage());
+        }
         button.setText(R.string.add_mattie_button);
 
         return view;
 
     }
 
-    @Override
-    public void add(User object) {
-        super.add(object);
-        users.add(object);
-    }
 }

@@ -162,8 +162,7 @@ public class MattiesTabFragment extends Fragment {
 
         matties = new ArrayList<>();
         matties.add(u1);
-        matties.add(new User("Tom Kempenaar"));
-        matties.add(new User("Tom Kempenaar"));
+        matties.add(new User("Tom Kempenaar", "https://image.freepik.com/free-icon/auricular-phone-symbol-in-a-circle_318-50200.png"));
         mattiesListAdapter = new MattiesListAdapter(getContext(), matties);
 
         FbFriendsListView = (ListView) view.findViewById(R.id.fb_friends);
