@@ -83,8 +83,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        super.onStop();
         closeFAB();
     }
 
