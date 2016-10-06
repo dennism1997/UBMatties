@@ -9,4 +9,7 @@
     <string name="add_mattie_button">Add Mattie</string>
     <string name="tab2">Sessions</string>
     <string name="facebook">Facebook</string>
+    <string name="type_coffee">Coffee</string>
+    <string name="type_study">Study</string>
+    <string name="type_lunch">Lunch</string>
 </resources>

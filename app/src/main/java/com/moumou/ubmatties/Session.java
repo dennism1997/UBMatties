@@ -77,4 +77,6 @@ public class Session {
     public void setSessionUsers(List<User> sessionUsers) {
         this.sessionUsers = sessionUsers;
     }
+
+
 }

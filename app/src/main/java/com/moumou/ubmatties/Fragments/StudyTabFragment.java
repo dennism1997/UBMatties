@@ -1,14 +1,19 @@
 package com.moumou.ubmatties.Fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
@@ -34,7 +39,9 @@ import static com.moumou.ubmatties.globals.SessionType.STUDY;
  * Created by MouMou on 04-10-2016
  */
 
-public class StudyTabFragment extends Fragment implements View.OnClickListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener {
+public class StudyTabFragment extends Fragment implements View.OnClickListener,
+        CalendarDatePickerDialogFragment.OnDateSetListener,
+        RadialTimePickerDialogFragment.OnTimeSetListener {
 
     private static final String DATEPICKER_TAG = "NEW_DATE_PICKER";
     private static final String TIMEPICKER_TAG = "NEW_TIME_PICKER";
@@ -51,6 +58,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private CalendarDatePickerDialogFragment datePicker;
     private RadialTimePickerDialogFragment timePicker;
 
+    private CalendarDatePickerDialogFragment datePickerModify;
+    private RadialTimePickerDialogFragment timePickerStartModify;
+    private RadialTimePickerDialogFragment timePickerEndModify;
+
     private ListView studyListView;
     private StudyListAdapter studyListAdapter;
     private List<Session> sessionList;
@@ -61,6 +72,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private SessionType newType;
     private int timePickerN;
 
+    private SwipeRefreshLayout swipeContainer;
+
     public StudyTabFragment() {
         super();
     }
@@ -68,6 +81,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.study_tab, container, false);
+
 
         return view;
     }
@@ -80,6 +94,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         initListView(view);
         initFab(view);
 
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        initSwipeToRefresh();
     }
 
     @Override
@@ -108,6 +124,17 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 newSession(STUDY);
                 break;
         }
+    }
+
+    private void initSwipeToRefresh() {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //TODO code for db
+                Snackbar.make(getView().getRootView(), "TODO", Snackbar.LENGTH_SHORT).show();
+                swipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -157,6 +184,168 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    private void initListView(View view) {
+
+        sessionList = new ArrayList<>();
+        sessionList.add(new Session(COFFEE, LocalDate.now(), LocalTime.now(), LocalTime.now()));
+        studyListAdapter = new StudyListAdapter(getContext(), sessionList);
+        studyListView = (ListView) view.findViewById(R.id.study_list);
+        studyListView.setAdapter(studyListAdapter);
+
+        studyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                modifySession((Session) studyListView.getAdapter().getItem(position));
+                return true;
+            }
+        });
+
+
+    }
+
+    private void newSession(SessionType type) {
+        newType = type;
+        DateTime now = DateTime.now();
+        MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
+        datePicker = new CalendarDatePickerDialogFragment()
+                .setOnDateSetListener(StudyTabFragment.this);
+        datePicker.setFirstDayOfWeek(2);
+        datePicker.setDateRange(minDate, null);
+        datePicker.show(getFragmentManager(), DATEPICKER_TAG);
+
+
+    }
+
+    private void addSession() {
+        Session session = new Session(newType, newDate, newStart, newEnd);
+        if (!newEnd.isAfter(newStart)) {
+            return;
+            //TODO add code for dialog
+        }
+        sessionList.add(session);
+        //studyListAdapter.sort(SessionComparator.getInstance());
+        studyListAdapter.notifyDataSetChanged();
+    }
+
+    private void modifySession(final Session session) {
+        System.out.println(session.getDate().toString());
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.modify_session);
+
+        final Button type = (Button) dialog.findViewById(R.id.modify_session_type);
+        final Button date = (Button) dialog.findViewById(R.id.modify_session_date);
+        final Button startTime = (Button) dialog.findViewById(R.id.modify_session_start);
+        final Button endTime = (Button) dialog.findViewById(R.id.modify_session_end);
+
+        type.setText(session.getType().toString());
+        date.setText(session.getDate().toString("dd MMM"));
+        startTime.setText(session.getDateTimeStart().toString("HH:mm"));
+        endTime.setText(session.getDateTimeEnd().toString("HH:mm"));
+
+        type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog typeDialog = new Dialog(v.getContext());
+                typeDialog.setContentView(R.layout.modify_type);
+
+                Button study = (Button) typeDialog.findViewById(R.id.set_type_study);
+                Button lunch = (Button) typeDialog.findViewById(R.id.set_type_lunch);
+                Button coffee = (Button) typeDialog.findViewById(R.id.set_type_coffee);
+
+                study.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        session.setType(STUDY);
+                        typeDialog.dismiss();
+                        studyListAdapter.notifyDataSetChanged();
+                        type.setText(getString(R.string.type_study));
+                    }
+                });
+
+                lunch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        session.setType(LUNCH);
+                        typeDialog.dismiss();
+                        studyListAdapter.notifyDataSetChanged();
+                        type.setText(getString(R.string.type_lunch));
+                    }
+                });
+
+                coffee.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        session.setType(COFFEE);
+                        typeDialog.dismiss();
+                        studyListAdapter.notifyDataSetChanged();
+                        type.setText(getString(R.string.type_coffee));
+                    }
+                });
+                typeDialog.show();
+            }
+        });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateTime now = DateTime.now();
+                MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
+                datePickerModify = new CalendarDatePickerDialogFragment()
+                        .setOnDateSetListener(StudyTabFragment.this);
+                datePickerModify.setFirstDayOfWeek(2);
+                datePickerModify.setDateRange(minDate, null);
+                datePickerModify.show(getFragmentManager(), DATEPICKER_TAG);
+                datePickerModify.setOnDateSetListener(new CalendarDatePickerDialogFragment.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int monthOfYear, int dayOfMonth) {
+                        session.setDate(new LocalDate(year, monthOfYear + 1, dayOfMonth));
+                        studyListAdapter.notifyDataSetChanged();
+                        date.setText(session.getDate().toString("dd MMM"));
+                    }
+                });
+            }
+        });
+
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerStartModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
+                timePickerStartModify.setForced24hFormat();
+                timePickerStartModify.setTitleText("New Start Time");
+                timePickerStartModify.show(getFragmentManager(), "");
+                timePickerStartModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
+                        session.setDateTimeStart(new LocalTime(hourOfDay, minute));
+                        studyListAdapter.notifyDataSetChanged();
+                        startTime.setText(session.getDateTimeStart().toString("HH:mm"));
+                    }
+                });
+            }
+        });
+
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerEndModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
+                timePickerEndModify.setForced24hFormat();
+                timePickerEndModify.setTitleText("New Start Time");
+                timePickerEndModify.show(getFragmentManager(), "");
+                timePickerEndModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
+                        session.setDateTimeEnd(new LocalTime(hourOfDay, minute));
+                        studyListAdapter.notifyDataSetChanged();
+                        endTime.setText(session.getDateTimeEnd().toString("HH:mm"));
+                    }
+                });
+            }
+        });
+        dialog.show();
+    }
+
+
     public void animateFAB() {
 
         if (isFabOpen) {
@@ -192,7 +381,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             fab2.setClickable(false);
             fab3.setClickable(false);
             isFabOpen = false;
-
         }
     }
 
@@ -207,7 +395,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         fab3 = (FloatingActionButton) view.findViewById(R.id.fab_study);
         fab3.setOnClickListener(this);
 
-
         fab_open = AnimationUtils.loadAnimation(view.getContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(view.getContext(), R.anim.fab_close);
         rotate_forward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_forward);
@@ -215,38 +402,5 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
     }
 
-    private void initListView(View view) {
-
-        sessionList = new ArrayList<>();
-        studyListAdapter = new StudyListAdapter(getContext(), sessionList);
-        studyListView = (ListView) view.findViewById(R.id.study_list);
-        studyListView.setAdapter(studyListAdapter);
-
-
-    }
-
-    private void newSession(SessionType type) {
-        newType = type;
-        DateTime now = DateTime.now();
-        MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-        datePicker = new CalendarDatePickerDialogFragment()
-                .setOnDateSetListener(StudyTabFragment.this);
-        datePicker.setFirstDayOfWeek(2);
-        datePicker.setDateRange(minDate, null);
-        datePicker.show(getFragmentManager(), DATEPICKER_TAG);
-
-
-    }
-
-    private void addSession() {
-        Session session = new Session(newType, newDate, newStart, newEnd);
-
-        if (!newEnd.isAfter(newStart)) {
-            return;
-            //TODO add code for dialog
-        }
-        sessionList.add(session);
-        studyListAdapter.notifyDataSetChanged();
-    }
 
 }

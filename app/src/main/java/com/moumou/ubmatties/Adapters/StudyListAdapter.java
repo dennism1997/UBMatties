@@ -15,6 +15,7 @@ import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
 import com.moumou.ubmatties.globals.SessionType;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
         end = (TextView) view.findViewById(R.id.session_end);
 
         imageView.setImageBitmap(getBitmap(session.getType()));
-        date.setText(session.getDate().getDayOfMonth() + " " + session.getDate().toString("MMM"));
+        date.setText(session.getDate().toString("dd MMM"));
         start.setText(session.getDateTimeStart().toString("HH:mm"));
         end.setText(session.getDateTimeEnd().toString("HH:mm"));
         return view;
@@ -73,5 +74,10 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
         }
 
         return bmp;
+    }
+
+    @Override
+    public void sort(Comparator<? super Session> comparator) {
+        super.sort(comparator);
     }
 }

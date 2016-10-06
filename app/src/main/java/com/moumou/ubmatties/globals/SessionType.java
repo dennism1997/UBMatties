@@ -5,5 +5,9 @@ package com.moumou.ubmatties.globals;
  */
 
 public enum SessionType {
-    STUDY, COFFEE, LUNCH
+    STUDY, COFFEE, LUNCH;
+
+    public String toPrettyString() {
+        return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1).toLowerCase();
+    }
 }
