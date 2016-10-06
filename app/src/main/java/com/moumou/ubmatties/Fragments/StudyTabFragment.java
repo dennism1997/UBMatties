@@ -17,7 +17,6 @@ import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFra
 import com.moumou.ubmatties.Adapters.StudyListAdapter;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
-import com.moumou.ubmatties.User;
 import com.moumou.ubmatties.globals.SessionType;
 
 import org.joda.time.DateTime;
@@ -108,7 +107,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int monthOfYear, int dayOfMonth) {
-        newDate = new LocalDate(year, monthOfYear, dayOfMonth);
+        newDate = new LocalDate(year, monthOfYear + 1, dayOfMonth);
 
         timePickerN = 0;
         timePicker = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
@@ -123,10 +122,26 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
         switch (timePickerN) {
             case 0:
+                LocalTime now = LocalTime.now();
+
                 newStart = new LocalTime(hourOfDay, minute);
                 timePicker = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
                 timePicker.setForced24hFormat();
                 timePicker.setTitleText("End Time");
+                switch (newType) {
+                    case LUNCH:
+                        now = now.plusMinutes(30);
+                        timePicker.setStartTime(now.getHourOfDay(), now.getMinuteOfHour());
+                        break;
+                    case COFFEE:
+                        now = now.plusMinutes(15);
+                        timePicker.setStartTime(now.getHourOfDay(), now.getMinuteOfHour());
+                        break;
+                    case STUDY:
+                        now = now.plusHours(1);
+                        timePicker.setStartTime(now.getHourOfDay(), now.getMinuteOfHour());
+                        break;
+                }
                 timePicker.show(getFragmentManager(), TIMEPICKER_TAG);
                 timePickerN++;
                 break;
@@ -205,7 +220,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void addSession() {
-        Session session = new Session(newType, newDate, newStart, newEnd, new ArrayList<User>());
+        Session session = new Session(newType, newDate, newStart, newEnd);
 
         if (!newEnd.isAfter(newStart)) {
             return;
