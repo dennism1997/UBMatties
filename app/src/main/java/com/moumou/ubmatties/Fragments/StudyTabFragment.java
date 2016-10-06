@@ -82,6 +82,11 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        closeFAB();
+    }
 
     @Override
     public void onClick(View v) {
@@ -122,9 +127,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
         switch (timePickerN) {
             case 0:
-                LocalTime now = LocalTime.now();
 
                 newStart = new LocalTime(hourOfDay, minute);
+                LocalTime now = newStart;
                 timePicker = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
                 timePicker.setForced24hFormat();
                 timePicker.setTitleText("End Time");
@@ -174,6 +179,20 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             fab2.setClickable(true);
             fab3.setClickable(true);
             isFabOpen = true;
+        }
+    }
+
+    private void closeFAB() {
+        if (isFabOpen) {
+            fab.startAnimation(rotate_backward);
+            fab1.startAnimation(fab_close);
+            fab2.startAnimation(fab_close);
+            fab3.startAnimation(fab_close);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            fab3.setClickable(false);
+            isFabOpen = false;
+
         }
     }
 
