@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Session {
 
+    private User host;
     private SessionType type;
     private LocalDate date;
     private LocalTime startTime;
@@ -78,6 +79,17 @@ public class Session {
         this.sessionUsers = sessionUsers;
     }
 
+    public void addSessionUser(User user) {
+        this.sessionUsers.add(user);
+    }
+
+    public User getHost() {
+        return host;
+    }
+
+    public void setHost(User host) {
+        this.host = host;
+    }
 
     @Override
     public boolean equals(Object obj) {

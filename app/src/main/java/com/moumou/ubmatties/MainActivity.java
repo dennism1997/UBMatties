@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private static User self;
+
     //private FloatingActionButton fabStudy;
     //private FloatingActionButton fabMatties;
 
@@ -168,5 +170,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static User getSelf() {
+        return self;
+    }
 
+    public static void setSelf(User self) {
+        MainActivity.self = self;
+    }
 }
