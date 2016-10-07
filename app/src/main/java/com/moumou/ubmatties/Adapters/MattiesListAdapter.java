@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +26,7 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
     private ArrayList<User> users;
     private ImageView imageView;
     private TextView name;
-    private Button button;
+    private ImageButton button;
 
     public MattiesListAdapter(Context context, ArrayList<User> users) {
         super(context, 0, users);
@@ -44,7 +44,7 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
         User user = users.get(position);
         name = (TextView) view.findViewById(R.id.matties_name);
         imageView = (ImageView) view.findViewById(R.id.matties_image);
-        button = (Button) view.findViewById(R.id.matties_button);
+        button = (ImageButton) view.findViewById(R.id.matties_button);
 
         name.setText(user.getName());
         if (user.getImage() == null) {
@@ -53,7 +53,6 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
         } else {
             imageView.setImageBitmap(user.getImage());
         }
-        button.setText(R.string.add_mattie_button);
 
         return view;
 

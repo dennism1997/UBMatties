@@ -90,11 +90,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        timePickerN = 2;
         initListView(view);
         initFab(view);
 
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.study_swipe_container);
         initSwipeToRefresh();
     }
 
@@ -240,8 +239,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
 
         type.setText(session.getType().toString());
         date.setText(session.getDate().toString("dd MMM"));
-        startTime.setText(session.getDateTimeStart().toString("HH:mm"));
-        endTime.setText(session.getDateTimeEnd().toString("HH:mm"));
+        startTime.setText(session.getStartTime().toString("HH:mm"));
+        endTime.setText(session.getEndTime().toString("HH:mm"));
 
         type.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -317,9 +316,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
                 timePickerStartModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
-                        session.setDateTimeStart(new LocalTime(hourOfDay, minute));
+                        session.setStartTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
-                        startTime.setText(session.getDateTimeStart().toString("HH:mm"));
+                        startTime.setText(session.getStartTime().toString("HH:mm"));
                     }
                 });
             }
@@ -335,9 +334,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
                 timePickerEndModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
-                        session.setDateTimeEnd(new LocalTime(hourOfDay, minute));
+                        session.setEndTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
-                        endTime.setText(session.getDateTimeEnd().toString("HH:mm"));
+                        endTime.setText(session.getEndTime().toString("HH:mm"));
                     }
                 });
             }

@@ -12,4 +12,5 @@
     <string name="type_coffee">Coffee</string>
     <string name="type_study">Study</string>
     <string name="type_lunch">Lunch</string>
+    <string name="logged_in_as">"Logged in as "</string>
 </resources>

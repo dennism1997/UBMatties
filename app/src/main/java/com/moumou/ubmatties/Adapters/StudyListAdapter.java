@@ -52,8 +52,8 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
 
         imageView.setImageBitmap(getBitmap(session.getType()));
         date.setText(session.getDate().toString("dd MMM"));
-        start.setText(session.getDateTimeStart().toString("HH:mm"));
-        end.setText(session.getDateTimeEnd().toString("HH:mm"));
+        start.setText(session.getStartTime().toString("HH:mm"));
+        end.setText(session.getEndTime().toString("HH:mm"));
         return view;
     }
 
@@ -80,4 +80,6 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
     public void sort(Comparator<? super Session> comparator) {
         super.sort(comparator);
     }
+
+
 }

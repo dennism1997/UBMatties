@@ -26,7 +26,7 @@ public class SessionComparator implements Comparator<Session> {
 
         //int date = dc.compare(o1.getDate(), o2.getDate());
         int date = -1;
-        int time = tc.compare(o1.getDateTimeStart(), o2.getDateTimeStart());
+        int time = tc.compare(o1.getStartTime(), o2.getStartTime());
         int res = 1;
         if (date < 0) {
             if (time < 0) {

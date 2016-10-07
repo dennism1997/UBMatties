@@ -16,25 +16,25 @@ public class Session {
 
     private SessionType type;
     private LocalDate date;
-    private LocalTime dateTimeStart;
-    private LocalTime dateTimeEnd;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private List<User> sessionUsers;
 
-    public Session(SessionType type, LocalDate date, LocalTime dateTimeStart,
-                   LocalTime dateTimeEnd, List<User> sessionUsers) {
+    public Session(SessionType type, LocalDate date, LocalTime startTime,
+                   LocalTime endTime, List<User> sessionUsers) {
         this.type = type;
         this.date = date;
-        this.dateTimeStart = dateTimeStart;
-        this.dateTimeEnd = dateTimeEnd;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.sessionUsers = sessionUsers;
     }
 
-    public Session(SessionType type, LocalDate date, LocalTime dateTimeStart,
-                   LocalTime dateTimeEnd) {
+    public Session(SessionType type, LocalDate date, LocalTime startTime,
+                   LocalTime endTime) {
         this.type = type;
         this.date = date;
-        this.dateTimeStart = dateTimeStart;
-        this.dateTimeEnd = dateTimeEnd;
+        this.startTime = startTime;
+        this.endTime = endTime;
         sessionUsers = new ArrayList<User>();
     }
 
@@ -46,20 +46,20 @@ public class Session {
         this.type = type;
     }
 
-    public LocalTime getDateTimeStart() {
-        return dateTimeStart;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setDateTimeStart(LocalTime dateTimeStart) {
-        this.dateTimeStart = dateTimeStart;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalTime getDateTimeEnd() {
-        return dateTimeEnd;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public void setDateTimeEnd(LocalTime dateTimeEnd) {
-        this.dateTimeEnd = dateTimeEnd;
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public LocalDate getDate() {
@@ -79,4 +79,20 @@ public class Session {
     }
 
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Session) {
+            Session other = (Session) obj;
+
+            return this.getType().equals(other.getType()) &&
+                    this.getStartTime().equals(other.getStartTime()) &&
+                    this.getEndTime().equals(other.getEndTime()) &&
+                    this.getDate().equals(other.getDate()) &&
+                    this.getSessionUsers().equals(other.getSessionUsers());
+        } else {
+            return false;
+        }
+
+
+    }
 }
