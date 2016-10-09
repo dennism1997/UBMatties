@@ -3,6 +3,7 @@ package com.moumou.ubmatties.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,7 @@ public class AddMattiesGridAdapter extends ArrayAdapter<User> {
             view = LayoutInflater.from(getContext())
                     .inflate(R.layout.add_user_grid_item, parent, false);
         }
-        User user = userList.get(position);
+        final User user = userList.get(position);
 
         final ImageButton imageButton = (ImageButton) view.findViewById(R.id.add_mattie_image_button);
         TextView name = (TextView) view.findViewById(R.id.add_mattie_name);
@@ -48,8 +49,10 @@ public class AddMattiesGridAdapter extends ArrayAdapter<User> {
             Bitmap bmp = BitmapFactory.decodeResource(getContext().getResources(),
                                                       R.drawable.user32);
             imageButton.setImageBitmap(bmp);
+            imageButton.setColorFilter(Color.argb(150, 255, 255, 255));
         } else {
             imageButton.setImageBitmap(user.getImage());
+            imageButton.setColorFilter(Color.argb(150, 255, 255, 255));
         }
 
         final CheckBox checkBox = (CheckBox) view.findViewById(R.id.add_mattie_checkbox);
@@ -57,20 +60,15 @@ public class AddMattiesGridAdapter extends ArrayAdapter<User> {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!checkBox.isChecked()) {
-                    Bitmap bmp = BitmapFactory.decodeResource(getContext().getResources(),
-                                                              R.drawable.ic_laptop_black_48dp);
-                    imageButton.setImageBitmap(bmp);
-                    checkBox.setChecked(true);
-                } else {
-                    Bitmap bmp = BitmapFactory.decodeResource(getContext().getResources(),
-                                                              R.drawable.user32);
-                    imageButton.setImageBitmap(bmp);
+                if (checkBox.isChecked()) {
+                    imageButton.setColorFilter(Color.argb(150, 255, 255, 255));
                     checkBox.setChecked(false);
+                } else {
+                    imageButton.clearColorFilter();
+                    checkBox.setChecked(true);
                 }
             }
         });
-
         return view;
     }
 }

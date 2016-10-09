@@ -188,6 +188,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             sessionUsers.add(new User("Tom", "5343432"));
             sessionUsers.add(new User("Tom", "5343432"));
             sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Tom", "5343432"));
             sessionList.add(new Session(COFFEE,
                                         LocalDate.now(),
                                         LocalTime.now(),
@@ -216,7 +219,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void addUsers(Session session) {
-        Dialog d = new AddUserDialog(getContext(), session.getSessionUsers());
+        AddUserDialog d = new AddUserDialog(getContext(), session.getSessionUsers());
         d.show();
     }
 

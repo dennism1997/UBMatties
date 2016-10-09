@@ -26,8 +26,6 @@ public class AddUserDialog extends Dialog {
 
         setContentView(R.layout.add_user_dialog);
 
-        this.setTitle("Add new Matties:");
-
         gridView = (GridView) findViewById(R.id.add_mattie_grid);
         gridAdapter = new AddMattiesGridAdapter(getContext(), userList);
 

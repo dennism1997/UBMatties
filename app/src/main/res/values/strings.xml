@@ -16,5 +16,5 @@
     <string name="invite_friends">Invite friends</string>
     <string name="not_logged_in">Not logged in</string>
     <string name="cant_connect_fb">Can\'t connect to Facebook.. \nAre you connected to the Internet?</string>
-    <string name="add_new_matties">Add new Matties:</string>
+    <string name="add_new_matties">Add new Matties</string>
 </resources>
