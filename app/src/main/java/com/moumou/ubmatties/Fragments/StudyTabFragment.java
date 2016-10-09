@@ -19,6 +19,7 @@ import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialo
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter;
 import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.moumou.ubmatties.Adapters.StudyListAdapter;
+import com.moumou.ubmatties.MainActivity;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
 import com.moumou.ubmatties.globals.SessionType;
@@ -212,9 +213,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private void addSession() {
         Session session = new Session(newType, newDate, newStart, newEnd);
         if (!newEnd.isAfter(newStart)) {
+            MainActivity.showAlertDialog("End time is earlier than the start time");
             return;
-            //TODO add code for dialog
-
         }
         sessionList.add(session);
         //studyListAdapter.sort(SessionComparator.getInstance());
@@ -291,6 +291,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         StudyTabFragment.this);
                 datePickerModify.setFirstDayOfWeek(2);
                 datePickerModify.setDateRange(minDate, null);
+                datePickerModify.setPreselectedDate(session.getDate().getYear(),
+                                                    session.getDate().getMonthOfYear() - 1,
+                                                    session.getDate().getDayOfMonth());
                 datePickerModify.show(getFragmentManager(), DATEPICKER_TAG);
                 datePickerModify.setOnDateSetListener(new CalendarDatePickerDialogFragment.OnDateSetListener() {
                     @Override
@@ -314,6 +317,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 timePickerStartModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
+                        if (!new LocalTime(hourOfDay, minute).isAfter(session.getEndTime())) {
+                            MainActivity.showAlertDialog("Start time is later than end time");
+                            return;
+                        }
                         session.setStartTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
                         startTime.setText(session.getStartTime().toString("HH:mm"));
@@ -333,6 +340,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 timePickerEndModify.setOnTimeSetListener(new RadialTimePickerDialogFragment.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
+                        if (!new LocalTime(hourOfDay, minute).isAfter(session.getEndTime())) {
+                            MainActivity.showAlertDialog("End time is earlier than the start time");
+                            return;
+                        }
                         session.setEndTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
                         endTime.setText(session.getEndTime().toString("HH:mm"));

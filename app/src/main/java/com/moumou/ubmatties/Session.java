@@ -21,6 +21,9 @@ public class Session {
     private LocalTime endTime;
     private List<User> sessionUsers;
 
+    /**
+     * Creates a new session from the list with self as host
+     */
     public Session(SessionType type, LocalDate date, LocalTime startTime,
                    LocalTime endTime, List<User> sessionUsers) {
         this.type = type;
@@ -28,8 +31,12 @@ public class Session {
         this.startTime = startTime;
         this.endTime = endTime;
         this.sessionUsers = sessionUsers;
+        this.host = MainActivity.getSelf();
     }
 
+    /**
+     * Creates a new session from a new empty list with self as host
+     */
     public Session(SessionType type, LocalDate date, LocalTime startTime,
                    LocalTime endTime) {
         this.type = type;
@@ -37,7 +44,33 @@ public class Session {
         this.startTime = startTime;
         this.endTime = endTime;
         sessionUsers = new ArrayList<>();
+        this.host = MainActivity.getSelf();
     }
+
+    /**
+     * Creates a new session from the list
+     */
+    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, List<User> sessionUsers, User host) {
+        this.type = type;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.sessionUsers = sessionUsers;
+        this.host = host;
+    }
+
+    /**
+     * Creates a new session
+     */
+    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, User host) {
+        this.type = type;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        sessionUsers = new ArrayList<>();
+        this.host = host;
+    }
+
 
     public SessionType getType() {
         return type;
