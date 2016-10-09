@@ -19,9 +19,11 @@ import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialo
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter;
 import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.moumou.ubmatties.Adapters.StudyListAdapter;
+import com.moumou.ubmatties.Dialog.AddUserDialog;
 import com.moumou.ubmatties.MainActivity;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
+import com.moumou.ubmatties.User;
 import com.moumou.ubmatties.globals.SessionType;
 
 import org.joda.time.DateTime;
@@ -52,6 +54,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private Animation fab_close;
     private Animation rotate_forward;
     private Animation rotate_backward;
+
 
     private RadialTimePickerDialogFragment timePicker;
 
@@ -181,7 +184,15 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
         if (sessionList == null) {
             sessionList = new ArrayList<>();
-            sessionList.add(new Session(COFFEE, LocalDate.now(), LocalTime.now(), LocalTime.now()));
+            ArrayList<User> sessionUsers = new ArrayList<>();
+            sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Tom", "5343432"));
+            sessionList.add(new Session(COFFEE,
+                                        LocalDate.now(),
+                                        LocalTime.now(),
+                                        LocalTime.now(),
+                                        sessionUsers));
         }
         studyListAdapter = new StudyListAdapter(getContext(), sessionList);
         studyListView = (ListView) view.findViewById(R.id.study_list);
@@ -195,6 +206,18 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 return true;
             }
         });
+
+        studyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                addUsers((Session) studyListView.getAdapter().getItem(position));
+            }
+        });
+    }
+
+    private void addUsers(Session session) {
+        Dialog d = new AddUserDialog(getContext(), session.getSessionUsers());
+        d.show();
     }
 
     private void newSession(SessionType type) {

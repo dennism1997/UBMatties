@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_mattie_grid_item"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/add_mattie_checkbox" />
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_laptop_black_48dp"
+        android:id="@+id/add_mattie_image_button"
+        android:background="@android:drawable/screen_background_light_transparent"
+        android:cropToPadding="false"
+        android:adjustViewBounds="false"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/add_mattie_name"
+        android:text="@android:string/unknownName"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center" />
+
+</LinearLayout>
