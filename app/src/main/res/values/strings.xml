@@ -14,4 +14,5 @@
     <string name="type_lunch">Lunch</string>
     <string name="logged_in_as">"Logged in as "</string>
     <string name="invite_friends">Invite friends</string>
+    <string name="not_logged_in">Not logged in</string>
 </resources>

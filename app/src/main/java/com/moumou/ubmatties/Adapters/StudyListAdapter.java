@@ -15,7 +15,6 @@ import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
 import com.moumou.ubmatties.globals.SessionType;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -25,10 +24,6 @@ import java.util.List;
 public class StudyListAdapter extends ArrayAdapter<Session> {
 
     private List<Session> sessionList;
-    private ImageView imageView;
-    private TextView date;
-    private TextView start;
-    private TextView end;
 
     public StudyListAdapter(Context context, List<Session> sessionList) {
         super(context, 0, sessionList);
@@ -37,7 +32,7 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
 
     @NonNull
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.study_list_item, parent, false);
@@ -45,10 +40,10 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
 
         Session session = sessionList.get(position);
 
-        imageView = (ImageView) view.findViewById(R.id.session_type_image);
-        date = (TextView) view.findViewById(R.id.session_date);
-        start = (TextView) view.findViewById(R.id.session_start);
-        end = (TextView) view.findViewById(R.id.session_end);
+        ImageView imageView = (ImageView) view.findViewById(R.id.session_type_image);
+        TextView date = (TextView) view.findViewById(R.id.session_date);
+        TextView start = (TextView) view.findViewById(R.id.session_start);
+        TextView end = (TextView) view.findViewById(R.id.session_end);
 
         imageView.setImageBitmap(getBitmap(session.getType()));
         date.setText(session.getDate().toString("dd MMM"));
@@ -72,14 +67,7 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
             default:
                 bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_add_white_24dp);
         }
-
         return bmp;
     }
-
-    @Override
-    public void sort(Comparator<? super Session> comparator) {
-        super.sort(comparator);
-    }
-
 
 }

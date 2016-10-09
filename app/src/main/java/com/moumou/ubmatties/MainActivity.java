@@ -19,26 +19,10 @@ import com.moumou.ubmatties.Fragments.SessionsTabFragment;
 import com.moumou.ubmatties.Fragments.StudyTabFragment;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import static com.moumou.ubmatties.globals.Globals.NUMBER_OF_TABS;
 
 public class MainActivity extends AppCompatActivity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
 
     private static User self;
 
@@ -54,10 +38,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
 //        fabStudy = (FloatingActionButton) findViewById(R.id.fab_study);
@@ -109,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         logKeyHash();
     }
 
+    //TODO remove when deploying
     private void logKeyHash() {
         try {
             PackageInfo info = getPackageManager().getPackageInfo("com.moumou.ubmatties", PackageManager.GET_SIGNATURES);
@@ -117,9 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 md.update(signature.toByteArray());
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -131,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

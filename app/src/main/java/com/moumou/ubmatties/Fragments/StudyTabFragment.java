@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -55,7 +54,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
     private Animation rotate_forward;
     private Animation rotate_backward;
 
-    private CalendarDatePickerDialogFragment datePicker;
     private RadialTimePickerDialogFragment timePicker;
 
     private CalendarDatePickerDialogFragment datePickerModify;
@@ -80,10 +78,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.study_tab, container, false);
 
-
-        return view;
+        return inflater.inflate(R.layout.study_tab, container, false);
     }
 
     @Override
@@ -130,7 +126,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
             @Override
             public void onRefresh() {
                 //TODO code for db
-                Snackbar.make(getView().getRootView(), "TODO", Snackbar.LENGTH_SHORT).show();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -207,7 +202,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
         newType = type;
         DateTime now = DateTime.now();
         MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-        datePicker = new CalendarDatePickerDialogFragment()
+        CalendarDatePickerDialogFragment datePicker = new CalendarDatePickerDialogFragment()
                 .setOnDateSetListener(StudyTabFragment.this);
         datePicker.setFirstDayOfWeek(2);
         datePicker.setDateRange(minDate, null);

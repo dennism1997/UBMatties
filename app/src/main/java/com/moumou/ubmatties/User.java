@@ -21,9 +21,8 @@ public class User {
     public User(String name, String id, String url) {
         this.name = name;
         this.id = id;
-        URL link = null;
         try {
-            link = new URL(url);
+            URL link = new URL(url);
             ImageFromInternet imgGetter = new ImageFromInternet();
             imgGetter.execute(link);
         } catch (MalformedURLException e) {

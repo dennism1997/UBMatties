@@ -5,7 +5,7 @@ import org.joda.time.DateTimeComparator;
 import java.util.Comparator;
 
 /**
- * Created by MouMou on 06-10-16.
+ * Created by MouMou on 06-10-16
  */
 
 public class SessionComparator implements Comparator<Session> {
@@ -24,8 +24,7 @@ public class SessionComparator implements Comparator<Session> {
         DateTimeComparator dc = DateTimeComparator.getInstance();
         DateTimeComparator tc = DateTimeComparator.getInstance();
 
-        //int date = dc.compare(o1.getDate(), o2.getDate());
-        int date = -1;
+        int date = dc.compare(o1.getDate(), o2.getDate());
         int time = tc.compare(o1.getStartTime(), o2.getStartTime());
         int res = 1;
         if (date < 0) {

@@ -36,7 +36,7 @@ public class Session {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        sessionUsers = new ArrayList<User>();
+        sessionUsers = new ArrayList<>();
     }
 
     public SessionType getType() {

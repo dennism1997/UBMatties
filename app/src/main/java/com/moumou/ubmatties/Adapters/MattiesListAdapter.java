@@ -24,9 +24,6 @@ import java.util.ArrayList;
 public class MattiesListAdapter extends ArrayAdapter<User> {
 
     private ArrayList<User> users;
-    private ImageView imageView;
-    private TextView name;
-    private ImageButton button;
 
     public MattiesListAdapter(Context context, ArrayList<User> users) {
         super(context, 0, users);
@@ -35,16 +32,16 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
 
     @NonNull
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.matties_list_item, parent, false);
         }
 
         User user = users.get(position);
-        name = (TextView) view.findViewById(R.id.matties_name);
-        imageView = (ImageView) view.findViewById(R.id.matties_image);
-        button = (ImageButton) view.findViewById(R.id.matties_button);
+        TextView name = (TextView) view.findViewById(R.id.matties_name);
+        ImageView imageView = (ImageView) view.findViewById(R.id.matties_image);
+        ImageButton button = (ImageButton) view.findViewById(R.id.matties_button);
 
         name.setText(user.getName());
         if (user.getImage() == null) {
@@ -54,8 +51,15 @@ public class MattiesListAdapter extends ArrayAdapter<User> {
             imageView.setImageBitmap(user.getImage());
         }
 
-        return view;
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO code to add mattie to a session
+            }
+        });
 
+
+        return view;
     }
 
 }

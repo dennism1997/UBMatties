@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +29,10 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.moumou.ubmatties.Adapters.MattiesListAdapter;
+import com.moumou.ubmatties.MainActivity;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.User;
 
@@ -40,6 +42,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.moumou.ubmatties.globals.Globals.INVITE_IMAGE_URL;
+import static com.moumou.ubmatties.globals.Globals.INVITE_URL;
+
 /**
  * Created by MouMou on 04-10-16
  */
@@ -48,24 +53,20 @@ public class MattiesTabFragment extends Fragment {
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
-    private LoginResult loginResult;
-    private ProfileTracker profileTracker;
     private ArrayList<String> permissionList;
     private AlertDialog.Builder builder;
-    private MenuItem facebookOption;
-    private ListView FbFriendsListView;
     private ArrayList<User> matties;
     private TextView textView;
     private MattiesListAdapter mattiesListAdapter;
     private SwipeRefreshLayout swipeContainer;
     private Profile profile;
+    private User self;
 
 
     public MattiesTabFragment() {
         super();
     }
 
-    private FloatingActionButton fab;
 
 
     @Override
@@ -88,7 +89,7 @@ public class MattiesTabFragment extends Fragment {
             String text = getString(R.string.logged_in_as) + profile.getName();
             textView.setText(text);
         } else {
-            textView.setText("Not logged in yet");
+            textView.setText(R.string.not_logged_in);
         }
         handleLoginButton();
 
@@ -105,13 +106,17 @@ public class MattiesTabFragment extends Fragment {
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.matties_swipe_container);
         initSwipeToRefresh();
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (MainActivity.getSelf() != null) {
+            self = MainActivity.getSelf();
+        }
 
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
     }
 
@@ -127,7 +132,7 @@ public class MattiesTabFragment extends Fragment {
         permissionList = new ArrayList<>();
         permissionList.add("user_friends");
 
-        profileTracker = new ProfileTracker() {
+        new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(
                     Profile oldProfile,
@@ -139,9 +144,12 @@ public class MattiesTabFragment extends Fragment {
                     loginButton.setVisibility(View.GONE);
                     getFriendsList();
                     getProfilePictures();
+                    self = new User(profile.getName(), profile.getId(), profile.getLinkUri().toString());
+                    MainActivity.setSelf(self);
                 } else {
                     profile = null;
                     loginButton.setVisibility(View.VISIBLE);
+                    swipeContainer.setRefreshing(false);
                     //facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
                 }
             }
@@ -154,7 +162,6 @@ public class MattiesTabFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_matties, menu);
-        facebookOption = menu.findItem(R.id.option_facebook);
 
 
     }
@@ -171,11 +178,13 @@ public class MattiesTabFragment extends Fragment {
                 LoginManager.getInstance().logOut();
                 matties.clear();
                 mattiesListAdapter.notifyDataSetChanged();
-                textView.setText("Not Logged In");
+                textView.setText(getString(R.string.not_logged_in));
             } else {
                 handleLoginOption();
             }
 
+        } else if (id == R.id.option_invite) {
+            openInviteDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -191,8 +200,8 @@ public class MattiesTabFragment extends Fragment {
 
         mattiesListAdapter = new MattiesListAdapter(getContext(), matties);
 
-        FbFriendsListView = (ListView) view.findViewById(R.id.fb_friends);
-        FbFriendsListView.setAdapter(mattiesListAdapter);
+        ListView fbFriendsListView = (ListView) view.findViewById(R.id.fb_friends);
+        fbFriendsListView.setAdapter(mattiesListAdapter);
 
     }
 
@@ -238,7 +247,8 @@ public class MattiesTabFragment extends Fragment {
                             e.printStackTrace();
                             matties.clear();
                             mattiesListAdapter.notifyDataSetChanged();
-                            textView.setText("Not Logged In");
+                            textView.setText(getString(R.string.not_logged_in));
+                            swipeContainer.setRefreshing(false);
                             showDialog("Can't connect to Facebook.. \nAre you connected to the Internet?");
                         }
 
@@ -268,9 +278,7 @@ public class MattiesTabFragment extends Fragment {
                             try {
                                 String url = response.getJSONObject().getJSONObject("data").getString("url");
                                 user.setImage(url);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (NullPointerException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             mattiesListAdapter.notifyDataSetChanged();
@@ -282,6 +290,32 @@ public class MattiesTabFragment extends Fragment {
             parameters.putString("type", "large");
             request.setParameters(parameters);
             request.executeAsync();
+        }
+    }
+
+    private void openInviteDialog() {
+
+        if (AppInviteDialog.canShow()) {
+            AppInviteContent content = new AppInviteContent.Builder().setApplinkUrl(INVITE_URL).
+                    setPreviewImageUrl(INVITE_IMAGE_URL).build();
+
+            AppInviteDialog appInviteDialog = new AppInviteDialog(getActivity());
+            appInviteDialog.registerCallback(callbackManager, new FacebookCallback<AppInviteDialog.Result>() {
+                @Override
+                public void onSuccess(AppInviteDialog.Result result) {
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+
+                }
+            });
+            appInviteDialog.show(content);
         }
     }
 
@@ -321,7 +355,7 @@ public class MattiesTabFragment extends Fragment {
                 showDialog("Can't login to facebook");
                 matties.clear();
                 mattiesListAdapter.notifyDataSetChanged();
-                textView.setText("Not Logged In");
+                textView.setText(getString(R.string.not_logged_in));
             }
 
             @Override

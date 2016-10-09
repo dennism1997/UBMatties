@@ -34,9 +34,6 @@ dependencies {
     // https://mvnrepository.com/artifact/joda-time/joda-time
     compile group: 'joda-time', name: 'joda-time', version: '2.9.4'
 
-    // https://mvnrepository.com/artifact/org.json/json
-    compile group: 'org.json', name: 'json', version: '20160810'
-
     compile 'com.code-troopers.betterpickers:library:3.0.1'
 
     testCompile 'junit:junit:4.12'
