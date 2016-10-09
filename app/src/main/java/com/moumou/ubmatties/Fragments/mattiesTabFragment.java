@@ -1,12 +1,10 @@
 package com.moumou.ubmatties.Fragments;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +52,6 @@ public class MattiesTabFragment extends Fragment {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private ArrayList<String> permissionList;
-    private AlertDialog.Builder builder;
     private ArrayList<User> matties;
     private TextView textView;
     private MattiesListAdapter mattiesListAdapter;
@@ -62,25 +59,18 @@ public class MattiesTabFragment extends Fragment {
     private Profile profile;
     private User self;
 
-
     public MattiesTabFragment() {
         super();
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.matties_tab, container, false);
 
-        this.setRetainInstance(true);
-
-        builder = new AlertDialog.Builder(MattiesTabFragment.this.getContext());
         textView = (TextView) view.findViewById(R.id.textView);
 
         loginButton = (LoginButton) view.findViewById(R.id.login_button);
-
         loginButton.setReadPermissions(permissionList);
 
         loginButton.setFragment(this);
@@ -110,13 +100,13 @@ public class MattiesTabFragment extends Fragment {
             self = MainActivity.getSelf();
         }
 
-//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        //        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
+        //        fab.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View v) {
+        //
+        //            }
+        //        });
 
     }
 
@@ -128,15 +118,12 @@ public class MattiesTabFragment extends Fragment {
         FacebookSdk.sdkInitialize(getContext());
         callbackManager = CallbackManager.Factory.create();
 
-
         permissionList = new ArrayList<>();
         permissionList.add("user_friends");
 
         new ProfileTracker() {
             @Override
-            protected void onCurrentProfileChanged(
-                    Profile oldProfile,
-                    Profile currentProfile) {
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 if (currentProfile != null) {
                     profile = currentProfile;
                     String text = getString(R.string.logged_in_as) + currentProfile.getName();
@@ -150,22 +137,16 @@ public class MattiesTabFragment extends Fragment {
                     profile = null;
                     loginButton.setVisibility(View.VISIBLE);
                     swipeContainer.setRefreshing(false);
-                    //facebookOption.setTitle(R.string.com_facebook_loginview_log_out_action);
                 }
             }
         };
-
-
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_matties, menu);
-
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -182,7 +163,6 @@ public class MattiesTabFragment extends Fragment {
             } else {
                 handleLoginOption();
             }
-
         } else if (id == R.id.option_invite) {
             openInviteDialog();
         }
@@ -202,7 +182,6 @@ public class MattiesTabFragment extends Fragment {
 
         ListView fbFriendsListView = (ListView) view.findViewById(R.id.fb_friends);
         fbFriendsListView.setAdapter(mattiesListAdapter);
-
     }
 
     private void initSwipeToRefresh() {
@@ -233,58 +212,67 @@ public class MattiesTabFragment extends Fragment {
 
     private void getFriendsList() {
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        try {
-                            System.out.println(response.getJSONObject().getJSONObject("friends").getJSONArray("data"));
-                            //response.getJSONObject().getJSONObject("friends").getJSONArray("data").getJSONObject(0).get("name").toString()
-                            fillFriendsList(response.getJSONObject().getJSONObject("friends").getJSONArray("data"));
-                            getProfilePictures();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                            matties.clear();
-                            mattiesListAdapter.notifyDataSetChanged();
-                            textView.setText(getString(R.string.not_logged_in));
-                            swipeContainer.setRefreshing(false);
-                            showDialog("Can't connect to Facebook.. \nAre you connected to the Internet?");
-                        }
-
-
-                    }
-                });
+                                                         new GraphRequest.GraphJSONObjectCallback() {
+                                                             @Override
+                                                             public void onCompleted(JSONObject object, GraphResponse response) {
+                                                                 try {
+                                                                     System.out.println(response.getJSONObject()
+                                                                                                .getJSONObject(
+                                                                                                        "friends")
+                                                                                                .getJSONArray(
+                                                                                                        "data"));
+                                                                     //response.getJSONObject().getJSONObject("friends").getJSONArray("data").getJSONObject(0).get("name").toString()
+                                                                     fillFriendsList(response.getJSONObject()
+                                                                                             .getJSONObject(
+                                                                                                     "friends")
+                                                                                             .getJSONArray(
+                                                                                                     "data"));
+                                                                     getProfilePictures();
+                                                                 } catch (JSONException e) {
+                                                                     e.printStackTrace();
+                                                                 } catch (NullPointerException e) {
+                                                                     e.printStackTrace();
+                                                                     matties.clear();
+                                                                     mattiesListAdapter.notifyDataSetChanged();
+                                                                     textView.setText(getString(R.string.not_logged_in));
+                                                                     swipeContainer.setRefreshing(
+                                                                             false);
+                                                                     MainActivity.showAlertDialog(
+                                                                             getString(R.string.cant_connect_fb));
+                                                                 }
+                                                             }
+                                                         });
         Bundle parameters = new Bundle();
         parameters.putString("fields", "friends");
         request.setParameters(parameters);
         request.executeAsync();
-
     }
 
     public void getProfilePictures() {
 
-
         for (final User user : matties) {
             GraphRequest request = new GraphRequest(AccessToken.getCurrentAccessToken(),
-                    "/" + user.getId() + "/picture",
-                    null,
-                    HttpMethod.GET,
-                    new GraphRequest.Callback() {
-                        @Override
-                        public void onCompleted(GraphResponse response) {
-                            System.out.println("profile picture response:");
-                            System.out.println(response.getRawResponse());
-                            try {
-                                String url = response.getJSONObject().getJSONObject("data").getString("url");
-                                user.setImage(url);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            mattiesListAdapter.notifyDataSetChanged();
-                            swipeContainer.setRefreshing(false);
-                        }
-                    });
+                                                    "/" + user.getId() + "/picture",
+                                                    null,
+                                                    HttpMethod.GET,
+                                                    new GraphRequest.Callback() {
+                                                        @Override
+                                                        public void onCompleted(GraphResponse response) {
+                                                            System.out.println(
+                                                                    "profile picture response:");
+                                                            System.out.println(response.getRawResponse());
+                                                            try {
+                                                                String url = response.getJSONObject()
+                                                                        .getJSONObject("data")
+                                                                        .getString("url");
+                                                                user.setImage(url);
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                            mattiesListAdapter.notifyDataSetChanged();
+                                                            swipeContainer.setRefreshing(false);
+                                                        }
+                                                    });
             Bundle parameters = new Bundle();
             parameters.putString("redirect", "false");
             parameters.putString("type", "large");
@@ -307,33 +295,14 @@ public class MattiesTabFragment extends Fragment {
 
                 @Override
                 public void onCancel() {
-
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-
                 }
             });
             appInviteDialog.show(content);
         }
-    }
-
-
-    private void showDialog(String message) {
-        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.setTitle("Error");
-        dialog.setMessage(message);
-
-
-        dialog.show();
-
     }
 
     private void handleLoginOption() {
@@ -352,7 +321,7 @@ public class MattiesTabFragment extends Fragment {
 
             @Override
             public void onCancel() {
-                showDialog("Can't login to facebook");
+                MainActivity.showAlertDialog(getString(R.string.cant_connect_fb));
                 matties.clear();
                 mattiesListAdapter.notifyDataSetChanged();
                 textView.setText(getString(R.string.not_logged_in));
@@ -360,12 +329,9 @@ public class MattiesTabFragment extends Fragment {
 
             @Override
             public void onError(FacebookException exception) {
-                showDialog("Can't login to facebook");
+                MainActivity.showAlertDialog(getString(R.string.cant_connect_fb));
                 exception.printStackTrace();
             }
         });
-
     }
-
-
 }

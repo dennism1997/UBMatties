@@ -139,7 +139,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         timePicker.setStartTime(LocalTime.now().getHourOfDay(), LocalTime.now().getMinuteOfHour());
         timePicker.setTitleText("Start Time");
         timePicker.show(getFragmentManager(), TIMEPICKER_TAG);
-
     }
 
     @Override
@@ -149,7 +148,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
                 newStart = new LocalTime(hourOfDay, minute);
                 LocalTime now = newStart;
-                timePicker = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
+                timePicker = new RadialTimePickerDialogFragment().setOnTimeSetListener(
+                        StudyTabFragment.this);
                 timePicker.setForced24hFormat();
                 timePicker.setTitleText("End Time");
                 switch (newType) {
@@ -194,18 +194,19 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 return true;
             }
         });
-
     }
 
     private void newSession(SessionType type) {
         newType = type;
         DateTime now = DateTime.now();
-        MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-        CalendarDatePickerDialogFragment datePicker = new CalendarDatePickerDialogFragment().setOnDateSetListener(StudyTabFragment.this);
+        MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(),
+                                                                        now.getMonthOfYear() - 1,
+                                                                        now.getDayOfMonth());
+        CalendarDatePickerDialogFragment datePicker = new CalendarDatePickerDialogFragment().setOnDateSetListener(
+                StudyTabFragment.this);
         datePicker.setFirstDayOfWeek(2);
         datePicker.setDateRange(minDate, null);
         datePicker.show(getFragmentManager(), DATEPICKER_TAG);
-
     }
 
     private void addSession() {
@@ -282,8 +283,12 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onClick(View v) {
                 DateTime now = DateTime.now();
-                MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-                datePickerModify = new CalendarDatePickerDialogFragment().setOnDateSetListener(StudyTabFragment.this);
+                MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(),
+                                                                                now.getMonthOfYear() -
+                                                                                1,
+                                                                                now.getDayOfMonth());
+                datePickerModify = new CalendarDatePickerDialogFragment().setOnDateSetListener(
+                        StudyTabFragment.this);
                 datePickerModify.setFirstDayOfWeek(2);
                 datePickerModify.setDateRange(minDate, null);
                 datePickerModify.show(getFragmentManager(), DATEPICKER_TAG);
@@ -301,7 +306,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timePickerStartModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
+                timePickerStartModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(
+                        StudyTabFragment.this);
                 timePickerStartModify.setForced24hFormat();
                 timePickerStartModify.setTitleText("New Start Time");
                 timePickerStartModify.show(getFragmentManager(), "");
@@ -319,7 +325,8 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timePickerEndModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(StudyTabFragment.this);
+                timePickerEndModify = new RadialTimePickerDialogFragment().setOnTimeSetListener(
+                        StudyTabFragment.this);
                 timePickerEndModify.setForced24hFormat();
                 timePickerEndModify.setTitleText("New Start Time");
                 timePickerEndModify.show(getFragmentManager(), "");
@@ -347,7 +354,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             fab2.setClickable(false);
             fab3.setClickable(false);
             isFabOpen = false;
-
         } else {
 
             fab.startAnimation(rotate_forward);
@@ -388,7 +394,5 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         fab_close = AnimationUtils.loadAnimation(view.getContext(), R.anim.fab_close);
         rotate_forward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_backward);
-
     }
-
 }
