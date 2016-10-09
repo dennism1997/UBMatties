@@ -38,9 +38,7 @@ import static com.moumou.ubmatties.globals.SessionType.STUDY;
  * Created by MouMou on 04-10-2016
  */
 
-public class StudyTabFragment extends Fragment implements View.OnClickListener,
-        CalendarDatePickerDialogFragment.OnDateSetListener,
-        RadialTimePickerDialogFragment.OnTimeSetListener {
+public class StudyTabFragment extends Fragment implements View.OnClickListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener {
 
     private static final String DATEPICKER_TAG = "NEW_DATE_PICKER";
     private static final String TIMEPICKER_TAG = "NEW_TIME_PICKER";
@@ -180,8 +178,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
 
     private void initListView(View view) {
 
-        sessionList = new ArrayList<>();
-        sessionList.add(new Session(COFFEE, LocalDate.now(), LocalTime.now(), LocalTime.now()));
+        if (sessionList == null) {
+            sessionList = new ArrayList<>();
+            sessionList.add(new Session(COFFEE, LocalDate.now(), LocalTime.now(), LocalTime.now()));
+        }
         studyListAdapter = new StudyListAdapter(getContext(), sessionList);
         studyListView = (ListView) view.findViewById(R.id.study_list);
         studyListView.setAdapter(studyListAdapter);
@@ -195,19 +195,16 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
             }
         });
 
-
     }
 
     private void newSession(SessionType type) {
         newType = type;
         DateTime now = DateTime.now();
         MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-        CalendarDatePickerDialogFragment datePicker = new CalendarDatePickerDialogFragment()
-                .setOnDateSetListener(StudyTabFragment.this);
+        CalendarDatePickerDialogFragment datePicker = new CalendarDatePickerDialogFragment().setOnDateSetListener(StudyTabFragment.this);
         datePicker.setFirstDayOfWeek(2);
         datePicker.setDateRange(minDate, null);
         datePicker.show(getFragmentManager(), DATEPICKER_TAG);
-
 
     }
 
@@ -216,6 +213,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
         if (!newEnd.isAfter(newStart)) {
             return;
             //TODO add code for dialog
+
         }
         sessionList.add(session);
         //studyListAdapter.sort(SessionComparator.getInstance());
@@ -285,8 +283,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
             public void onClick(View v) {
                 DateTime now = DateTime.now();
                 MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear() - 1, now.getDayOfMonth());
-                datePickerModify = new CalendarDatePickerDialogFragment()
-                        .setOnDateSetListener(StudyTabFragment.this);
+                datePickerModify = new CalendarDatePickerDialogFragment().setOnDateSetListener(StudyTabFragment.this);
                 datePickerModify.setFirstDayOfWeek(2);
                 datePickerModify.setDateRange(minDate, null);
                 datePickerModify.show(getFragmentManager(), DATEPICKER_TAG);
@@ -339,7 +336,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
         dialog.show();
     }
 
-
     public void animateFAB() {
 
         if (isFabOpen) {
@@ -378,7 +374,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-
     private void initFab(View view) {
         fab = (FloatingActionButton) view.findViewById(R.id.fab_study_tab);
         fab.setOnClickListener(this);
@@ -395,6 +390,5 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener,
         rotate_backward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_backward);
 
     }
-
 
 }

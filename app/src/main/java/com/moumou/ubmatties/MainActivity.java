@@ -1,5 +1,6 @@
 package com.moumou.ubmatties;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -25,9 +27,13 @@ import static com.moumou.ubmatties.globals.Globals.NUMBER_OF_TABS;
 public class MainActivity extends AppCompatActivity {
 
     private static User self;
+    private StudyTabFragment studyTabFragment;
+    private SessionsTabFragment sessionTabFragment;
+    private MattiesTabFragment mattiesTabFragment;
 
     //private FloatingActionButton fabStudy;
     //private FloatingActionButton fabMatties;
+    private static AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,51 +51,17 @@ public class MainActivity extends AppCompatActivity {
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-//        fabStudy = (FloatingActionButton) findViewById(R.id.fab_study);
-//        fabStudy.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your add study session action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-//        fabMatties = (FloatingActionButton) findViewById(R.id.fab_matties);
-//        fabMatties.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your add Mattie action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                switch (tab.getPosition()) {
-//                    //TODO fix fab buttons
-//                    case 0:
-//                        findViewById(R.id.fab_study).setVisibility(View.VISIBLE);
-//                        findViewById(R.id.fab_matties).setVisibility(View.GONE);
-//                    case 1:
-//                        findViewById(R.id.fab_study).setVisibility(View.GONE);
-//                        findViewById(R.id.fab_matties).setVisibility(View.VISIBLE);
-//                }
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
 
+        if (studyTabFragment == null) studyTabFragment = new StudyTabFragment();
+        studyTabFragment.setRetainInstance(true);
+        if (sessionTabFragment == null) sessionTabFragment = new SessionsTabFragment();
+        sessionTabFragment.setRetainInstance(true);
+        if (mattiesTabFragment == null) mattiesTabFragment = new MattiesTabFragment();
+        mattiesTabFragment.setRetainInstance(true);
+
+        builder = new AlertDialog.Builder(this);
 
         logKeyHash();
     }
@@ -108,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -123,16 +94,15 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new StudyTabFragment();
+                    return studyTabFragment;
                 case 1:
-                    return new SessionsTabFragment();
+                    return sessionTabFragment;
                 case 2:
                     return new MattiesTabFragment();
 
             }
             return null;
         }
-
 
         @Override
         public int getCount() {
@@ -161,4 +131,21 @@ public class MainActivity extends AppCompatActivity {
     public static void setSelf(User self) {
         MainActivity.self = self;
     }
+
+    public static void showAlertDialog(String message) {
+
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setTitle("Error");
+        dialog.setMessage(message);
+
+        dialog.show();
+
+    }
 }
+
