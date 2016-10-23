@@ -55,7 +55,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private Animation rotate_forward;
     private Animation rotate_backward;
 
-
     private RadialTimePickerDialogFragment timePicker;
 
     private CalendarDatePickerDialogFragment datePickerModify;
@@ -186,11 +185,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             sessionList = new ArrayList<>();
             ArrayList<User> sessionUsers = new ArrayList<>();
             sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Tom", "5343432"));
+            sessionUsers.add(new User("Dennis", "5343432"));
+            sessionUsers.add(new User("Stephan", "5343432"));
+            sessionUsers.add(new User("Vink", "5343432"));
+            sessionUsers.add(new User("Abba", "5343432"));
             sessionList.add(new Session(COFFEE,
                                         LocalDate.now(),
                                         LocalTime.now(),
@@ -204,7 +202,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         studyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
                 modifySession((Session) studyListView.getAdapter().getItem(position));
                 return true;
             }

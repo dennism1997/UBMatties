@@ -6,7 +6,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by MouMou on 06-10-16
@@ -19,13 +18,12 @@ public class Session {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private List<User> sessionUsers;
+    private ArrayList<User> sessionUsers;
 
     /**
      * Creates a new session from the list with self as host
      */
-    public Session(SessionType type, LocalDate date, LocalTime startTime,
-                   LocalTime endTime, List<User> sessionUsers) {
+    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, ArrayList<User> sessionUsers) {
         this.type = type;
         this.date = date;
         this.startTime = startTime;
@@ -50,7 +48,7 @@ public class Session {
     /**
      * Creates a new session from the list
      */
-    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, List<User> sessionUsers, User host) {
+    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, ArrayList<User> sessionUsers, User host) {
         this.type = type;
         this.date = date;
         this.startTime = startTime;
@@ -104,11 +102,11 @@ public class Session {
         this.date = date;
     }
 
-    public List<User> getSessionUsers() {
+    public ArrayList<User> getSessionUsers() {
         return sessionUsers;
     }
 
-    public void setSessionUsers(List<User> sessionUsers) {
+    public void setSessionUsers(ArrayList<User> sessionUsers) {
         this.sessionUsers = sessionUsers;
     }
 
