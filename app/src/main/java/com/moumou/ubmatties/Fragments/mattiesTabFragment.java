@@ -78,29 +78,33 @@ public class MattiesTabFragment extends Fragment implements Observer {
 
         if (MainActivity.getSelf() != null) {
             self = MainActivity.getSelf();
+            getFriendsList();
+        } else {
+
+            new ProfileTracker() {
+                @Override
+                protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                    if (currentProfile != null) {
+                        profile = currentProfile;
+                        String text = getString(R.string.logged_in_as) + currentProfile.getName();
+                        textView.setText(text);
+                        getFriendsList();
+
+                        self = new User(profile.getName(),
+                                        profile.getId(),
+                                        profile.getLinkUri().toString());
+                        MainActivity.setSelf(self);
+                        MainActivity.insertUser(profile.getId(),
+                                                profile.getName(),
+                                                profile.getProfilePictureUri(100, 100).toString());
+                    } else {
+                        profile = null;
+                    }
+                    swipeContainer.setRefreshing(false);
+                }
+            };
         }
 
-        new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                if (currentProfile != null) {
-                    profile = currentProfile;
-                    String text = getString(R.string.logged_in_as) + currentProfile.getName();
-                    textView.setText(text);
-                    getFriendsList();
-
-                    self = new User(profile.getName(),
-                                    profile.getId(),
-                                    profile.getLinkUri().toString());
-                    MainActivity.setSelf(self);
-                } else {
-                    profile = null;
-                }
-                swipeContainer.setRefreshing(false);
-            }
-        };
-
-        getFriendsList();
 
         //        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
         //        fab.setOnClickListener(new View.OnClickListener() {

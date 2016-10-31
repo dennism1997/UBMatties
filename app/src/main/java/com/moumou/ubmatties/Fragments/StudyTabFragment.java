@@ -36,9 +36,11 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +109,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.study_swipe_container);
         initSwipeToRefresh();
+
+        if (MainActivity.getSelf() != null) {
+            getSessionsFromDB();
+        }
     }
 
     @Override
@@ -452,18 +458,23 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 String result = null;
 
                 try {
-                    dataBaseUrl = new URL(Globals.DB_SESSIONS_FROM_USER_URL + 1);
+                    dataBaseUrl = new URL(
+                            Globals.DB_SESSIONS_FROM_USER_URL + MainActivity.getSelf().getId());
                     urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder sb = new StringBuilder();
-                    String line = null;
+                    String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line).append("\n");
                     }
                     result = sb.toString();
-                } catch (Exception e) {
+                } catch (NullPointerException e) {
+                    MainActivity.showAlertDialog("Are you logged in to facebook yet?");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     if (urlConnection != null) {
@@ -476,9 +487,13 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                JSON = s;
-                parseJSONtoSessionList();
-                swipeContainer.setRefreshing(false);
+                if (s != null) {
+                    JSON = s;
+                    parseJSONtoSessionList();
+                    swipeContainer.setRefreshing(false);
+                } else {
+                    swipeContainer.setRefreshing(false);
+                }
             }
         }
         GetJSONData g = new GetJSONData();

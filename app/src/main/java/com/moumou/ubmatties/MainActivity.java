@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private MattiesTabFragment mattiesTabFragment;
 
     private CallbackManager callbackManager;
-    private ArrayList<String> permissionList;
     private Profile profile;
 
     private HttpURLConnection urlConnection;
@@ -59,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initializeFacebook();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,11 +84,13 @@ public class MainActivity extends AppCompatActivity {
         mattiesTabFragment.setRetainInstance(true);
 
         builder = new AlertDialog.Builder(this);
+    }
 
+    private void initializeFacebook() {
         FacebookSdk.sdkInitialize(this);
         callbackManager = CallbackManager.Factory.create();
 
-        permissionList = new ArrayList<>();
+        ArrayList<String> permissionList = new ArrayList<>();
         permissionList.add("user_friends");
 
         new ProfileTracker() {
@@ -192,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder sb = new StringBuilder();
-                    String line = null;
+                    String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line).append("\n");
                     }
                     result = sb.toString();
                 } catch (Exception e) {
@@ -249,9 +252,9 @@ public class MainActivity extends AppCompatActivity {
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder sb = new StringBuilder();
-                    String line = null;
+                    String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line).append("\n");
                     }
                     result = sb.toString();
                 } catch (Exception e) {
