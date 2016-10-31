@@ -8,14 +8,21 @@ public class Globals {
     public static final int NUMBER_OF_TABS = 3;
     public static final String INVITE_URL = "";
     public static final String INVITE_IMAGE_URL = "";
-    public static final String DB_HOST = "http://www.dennismouwen.nl/getData.php";
-    private static final String TAG_ID = "id";
-    private static final String TAG_NAME = "name";
-    private static final String TAG_HOSTID = "hostid";
-    private static final String TAG_TYPE = "type";
-    private static final String TAG_DATE = "date";
-    private static final String TAG_START = "start";
-    private static final String TAG_END = "end";
+    public static final String DB_SESSIONS_URL = "http://ubmatties.dennismouwen.nl/getSessions.php";
+    public static final String DB_SESSIONS_FROM_USER_URL = "http://ubmatties.dennismouwen.nl/getSessionsFromHost.php?id=";
+    public static final String DB_USER = "http://ubmatties.dennismouwen.nl/getUser.php?id=";
+    public static final String DB_INSERT_USER = "http://ubmatties.dennismouwen.nl/insertUser.php?id=";
+    public static final String TAG_ID = "id";
+    public static final String TAG_NAME = "name";
+    public static final String TAG_HOSTID = "hostid";
+    public static final String TAG_TYPE = "type";
+    public static final String TAG_DATE = "date";
+    public static final String TAG_START = "start";
+    public static final String TAG_END = "end";
+    public static final String TAG_RESULT = "result";
+    public static final String TAG_SESSIONS = "sessions";
+    public static final String TAG_USER = "user";
+
 
     private Globals(){
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class Session {
 
+    private int id;
     private User host;
     private SessionType type;
     private LocalDate date;
@@ -46,29 +47,17 @@ public class Session {
     }
 
     /**
-     * Creates a new session from the list
+     * Creates a new session from a new empty list with self as host
      */
-    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, ArrayList<User> sessionUsers, User host) {
-        this.type = type;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.sessionUsers = sessionUsers;
-        this.host = host;
-    }
-
-    /**
-     * Creates a new session
-     */
-    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime, User host) {
+    public Session(int id, SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.id = id;
         this.type = type;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         sessionUsers = new ArrayList<>();
-        this.host = host;
+        this.host = MainActivity.getSelf();
     }
-
 
     public SessionType getType() {
         return type;

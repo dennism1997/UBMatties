@@ -18,14 +18,14 @@ import com.moumou.ubmatties.globals.SessionType;
 import java.util.List;
 
 /**
- * Created by MouMou on 06-10-16
+ * Created by MouMou on 25-10-16.
  */
 
-public class StudyListAdapter extends ArrayAdapter<Session> {
+public class SessionsListAdapter extends ArrayAdapter<Session> {
 
     private List<Session> sessionList;
 
-    public StudyListAdapter(Context context, List<Session> sessionList) {
+    public SessionsListAdapter(Context context, List<Session> sessionList) {
         super(context, 0, sessionList);
         this.sessionList = sessionList;
     }
@@ -57,18 +57,21 @@ public class StudyListAdapter extends ArrayAdapter<Session> {
         Bitmap bmp;
         switch (type) {
             case COFFEE:
-                bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_coffee_black_48dp);
+                bmp = BitmapFactory.decodeResource(getContext().getResources(),
+                                                   R.drawable.ic_coffee_black_48dp);
                 break;
             case STUDY:
-                bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_laptop_black_48dp);
+                bmp = BitmapFactory.decodeResource(getContext().getResources(),
+                                                   R.drawable.ic_laptop_black_48dp);
                 break;
             case LUNCH:
-                bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_food_apple_black_48dp);
+                bmp = BitmapFactory.decodeResource(getContext().getResources(),
+                                                   R.drawable.ic_food_apple_black_48dp);
                 break;
             default:
-                bmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_add_white_24dp);
+                bmp = BitmapFactory.decodeResource(getContext().getResources(),
+                                                   R.drawable.ic_add_white_24dp);
         }
         return bmp;
     }
-
 }

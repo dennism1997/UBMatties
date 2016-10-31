@@ -1,10 +1,9 @@
 package com.moumou.ubmatties;
 
 import android.content.DialogInterface;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,14 +12,27 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.Log;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.moumou.ubmatties.Fragments.MattiesTabFragment;
 import com.moumou.ubmatties.Fragments.SessionsTabFragment;
 import com.moumou.ubmatties.Fragments.StudyTabFragment;
+import com.moumou.ubmatties.globals.Globals;
 
-import java.security.MessageDigest;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 import static com.moumou.ubmatties.globals.Globals.NUMBER_OF_TABS;
 
@@ -30,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
     private StudyTabFragment studyTabFragment;
     private SessionsTabFragment sessionTabFragment;
     private MattiesTabFragment mattiesTabFragment;
+
+    private CallbackManager callbackManager;
+    private ArrayList<String> permissionList;
+    private Profile profile;
+
+    private HttpURLConnection urlConnection;
+    private URL dataBaseUrl;
+    private String JSON;
 
     //private FloatingActionButton fabStudy;
     //private FloatingActionButton fabMatties;
@@ -45,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
 
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(
+                getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
@@ -63,21 +84,33 @@ public class MainActivity extends AppCompatActivity {
 
         builder = new AlertDialog.Builder(this);
 
-        logKeyHash();
-    }
+        FacebookSdk.sdkInitialize(this);
+        callbackManager = CallbackManager.Factory.create();
 
-    //TODO remove when deploying
-    private void logKeyHash() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.moumou.ubmatties", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+        permissionList = new ArrayList<>();
+        permissionList.add("user_friends");
+
+        new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                if (currentProfile != null) {
+                    profile = currentProfile;
+                    MainActivity.setSelf(new User(profile.getName(),
+                                                  profile.getId(),
+                                                  profile.getProfilePictureUri(100, 100)
+                                                          .toString()));
+                    logintoDB();
+                    Snackbar.make(findViewById(R.id.main_content),
+                                  "main" + getString(R.string.logged_in_as) + getSelf().getName(),
+                                  Snackbar.LENGTH_LONG).show();
+                } else {
+                    profile = null;
+                    Snackbar.make(findViewById(R.id.main_content),
+                                  "Log in at the My Matties Tab!",
+                                  Snackbar.LENGTH_LONG).show();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        };
     }
 
     /**
@@ -99,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                     return sessionTabFragment;
                 case 2:
                     return new MattiesTabFragment();
-
             }
             return null;
         }
@@ -118,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
                     return getString(R.string.tab2);
                 case 2:
                     return getString(R.string.tab3);
-
             }
             return null;
         }
@@ -145,7 +176,100 @@ public class MainActivity extends AppCompatActivity {
         dialog.setMessage(message);
 
         dialog.show();
+    }
 
+    public void logintoDB() {
+        class GetJSONData extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                String result = null;
+
+                try {
+                    dataBaseUrl = new URL(Globals.DB_USER + self.getId());
+                    urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON = s;
+                parseUser();
+            }
+        }
+        GetJSONData g = new GetJSONData();
+        g.execute();
+    }
+
+    public void parseUser() {
+        try {
+            JSONObject object = new JSONObject(JSON);
+            JSONArray array = object.getJSONArray(Globals.TAG_USER);
+            System.out.println(object.toString());
+            if (!(array.length() > 0)) {
+                insertUser(self.getId(), self.getName(), self.getImageURL());
+            } else {
+                JSONObject user = array.getJSONObject(0);
+                System.out.println(user.toString());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertUser(final String id, final String name, final String image) {
+        class GetJSONData extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                String result = null;
+
+                try {
+                    URL dataBaseUrl = new URL(
+                            Globals.DB_INSERT_USER + id + "&name=" + name + "&image=" + image);
+                    HttpURLConnection urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                if (!s.equals("success\n")) {
+                    showAlertDialog("cant insert user into database\n" + s);
+                }
+            }
+        }
+        GetJSONData g = new GetJSONData();
+        g.execute();
     }
 }
 

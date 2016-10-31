@@ -7,16 +7,18 @@ import android.os.AsyncTask;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Observable;
 
 /**
  * Created by MouMou on 04-10-16
  */
 
-public class User {
+public class User extends Observable {
 
     private String name;
     private Bitmap image;
     private String id;
+    private String imageURL;
 
     public User(String name, String id, String url) {
         this.name = name;
@@ -29,7 +31,7 @@ public class User {
             image = null;
             e.printStackTrace();
         }
-
+        this.imageURL = url;
     }
 
     public User(String name, String id) {
@@ -83,6 +85,8 @@ public class User {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             User.this.setImage(bitmap);
+            User.this.setChanged();
+            notifyObservers();
         }
     }
 
@@ -97,5 +101,9 @@ public class User {
             return this.getName().equals(other.getName()) && this.getId().equals(other.getId());
         }
         return false;
+    }
+
+    public String getImageURL() {
+        return imageURL;
     }
 }

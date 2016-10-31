@@ -1,6 +1,7 @@
 package com.moumou.ubmatties.Fragments;
 
 import android.app.Dialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,12 +25,21 @@ import com.moumou.ubmatties.MainActivity;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
 import com.moumou.ubmatties.User;
+import com.moumou.ubmatties.globals.Globals;
 import com.moumou.ubmatties.globals.SessionType;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +64,11 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private Animation fab_close;
     private Animation rotate_forward;
     private Animation rotate_backward;
+
+    private HttpURLConnection urlConnection;
+    private URL dataBaseUrl;
+    private String JSON;
+
 
     private RadialTimePickerDialogFragment timePicker;
 
@@ -126,8 +141,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //TODO code for db
-                swipeContainer.setRefreshing(false);
+                getSessionsFromDB();
             }
         });
     }
@@ -428,5 +442,71 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         fab_close = AnimationUtils.loadAnimation(view.getContext(), R.anim.fab_close);
         rotate_forward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_backward);
+    }
+
+    private void getSessionsFromDB() {
+        class GetJSONData extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                String result = null;
+
+                try {
+                    dataBaseUrl = new URL(Globals.DB_SESSIONS_FROM_USER_URL + 1);
+                    urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                JSON = s;
+                parseJSONtoSessionList();
+                swipeContainer.setRefreshing(false);
+            }
+        }
+        GetJSONData g = new GetJSONData();
+        g.execute();
+    }
+
+    private void parseJSONtoSessionList() {
+        sessionList.clear();
+
+        try {
+            JSONObject jsonObject = new JSONObject(JSON);
+            JSONArray array = jsonObject.getJSONArray(Globals.TAG_USER);
+            System.out.println(jsonObject.toString());
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject o = array.getJSONObject(i);
+
+                int id = Integer.valueOf(o.getString(Globals.TAG_ID));
+                SessionType type = SessionType.fromInt(Integer.valueOf(o.getString(Globals.TAG_TYPE)));
+                LocalDate date = LocalDate.parse(o.getString(Globals.TAG_DATE));
+                LocalTime start = LocalTime.parse(o.getString(Globals.TAG_START));
+                LocalTime end = LocalTime.parse(o.getString(Globals.TAG_END));
+                Session s = new Session(id, type, date, start, end);
+                sessionList.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            studyListAdapter.notifyDataSetChanged();
+        }
     }
 }
