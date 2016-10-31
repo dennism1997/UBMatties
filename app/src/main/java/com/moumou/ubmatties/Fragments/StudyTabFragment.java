@@ -209,11 +209,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             sessionUsers.add(new User("Stephan", "5343432"));
             sessionUsers.add(new User("Vink", "5343432"));
             sessionUsers.add(new User("Abba", "5343432"));
-            sessionList.add(new Session(COFFEE,
-                                        LocalDate.now(),
-                                        LocalTime.now(),
-                                        LocalTime.now(),
-                                        sessionUsers));
         }
         studyListAdapter = new StudyListAdapter(getContext(), sessionList);
         studyListView = (ListView) view.findViewById(R.id.study_list);
@@ -259,13 +254,10 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             MainActivity.showAlertDialog("End time is earlier than the start time");
             return;
         }
-        sessionList.add(session);
-        //studyListAdapter.sort(SessionComparator.getInstance());
-        studyListAdapter.notifyDataSetChanged();
+        addSessionToDB(session);
     }
 
     private void modifySession(final Session session) {
-        System.out.println(session.getDate().toString());
         Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.modify_session);
 
@@ -476,6 +468,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    System.err.println(result);
                 } finally {
                     if (urlConnection != null) {
                         urlConnection.disconnect();
@@ -506,7 +499,6 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         try {
             JSONObject jsonObject = new JSONObject(JSON);
             JSONArray array = jsonObject.getJSONArray(Globals.TAG_USER);
-            System.out.println(jsonObject.toString());
             for (int i = 0; i < array.length(); i++) {
                 JSONObject o = array.getJSONObject(i);
 
@@ -520,8 +512,54 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println(JSON);
         } finally {
             studyListAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void addSessionToDB(final Session s) {
+        class GetJSONData extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                String result = null;
+
+                try {
+                    dataBaseUrl = new URL(
+                            Globals.DB_INSERT_SESSION + s.getHost().getId() + "&type=" +
+                            SessionType.toInt(s.getType()) + "&date=" +
+                            s.getDate().toString("YYYY-MM-dd") + "&start=" +
+                            s.getStartTime().toString("HH:mm:ss") + "&end=" +
+                            s.getEndTime().toString("HH:mm:ss"));
+                    urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    result = sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println(result);
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                getSessionsFromDB();
+            }
+        }
+        GetJSONData g = new GetJSONData();
+        g.execute();
     }
 }

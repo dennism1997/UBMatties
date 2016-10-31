@@ -12,6 +12,7 @@ public class Globals {
     public static final String DB_SESSIONS_FROM_USER_URL = "http://ubmatties.dennismouwen.nl/getSessionsFromHost.php?id=";
     public static final String DB_USER = "http://ubmatties.dennismouwen.nl/getUser.php?id=";
     public static final String DB_INSERT_USER = "http://ubmatties.dennismouwen.nl/insertUser.php?id=";
+    public static final String DB_INSERT_SESSION = "http://ubmatties.dennismouwen.nl/insertSession.php?hostid=";
     public static final String TAG_ID = "id";
     public static final String TAG_NAME = "name";
     public static final String TAG_HOSTID = "hostid";

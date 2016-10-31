@@ -225,15 +225,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             JSONObject object = new JSONObject(JSON);
             JSONArray array = object.getJSONArray(Globals.TAG_USER);
-            System.out.println(object.toString());
             if (!(array.length() > 0)) {
                 insertUser(self.getId(), self.getName(), self.getImageURL());
             } else {
                 JSONObject user = array.getJSONObject(0);
-                System.out.println(user.toString());
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            System.err.println(JSON);
         }
     }
 

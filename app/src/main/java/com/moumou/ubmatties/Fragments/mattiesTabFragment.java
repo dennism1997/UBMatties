@@ -105,7 +105,6 @@ public class MattiesTabFragment extends Fragment implements Observer {
             };
         }
 
-
         //        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_matties);
         //        fab.setOnClickListener(new View.OnClickListener() {
         //            @Override
@@ -126,8 +125,6 @@ public class MattiesTabFragment extends Fragment implements Observer {
 
         permissionList = new ArrayList<>();
         permissionList.add("user_friends");
-
-
     }
 
     @Override
@@ -204,12 +201,6 @@ public class MattiesTabFragment extends Fragment implements Observer {
                                                              @Override
                                                              public void onCompleted(JSONObject object, GraphResponse response) {
                                                                  try {
-                                                                     System.out.println(response.getJSONObject()
-                                                                                                .getJSONObject(
-                                                                                                        "friends")
-                                                                                                .getJSONArray(
-                                                                                                        "data"));
-                                                                     //response.getJSONObject().getJSONObject("friends").getJSONArray("data").getJSONObject(0).get("name").toString()
                                                                      fillFriendsList(response.getJSONObject()
                                                                                              .getJSONObject(
                                                                                                      "friends")
@@ -249,7 +240,6 @@ public class MattiesTabFragment extends Fragment implements Observer {
                                                     new GraphRequest.Callback() {
                                                         @Override
                                                         public void onCompleted(GraphResponse response) {
-                                                            System.out.println(response.getRawResponse());
                                                             try {
                                                                 String url = response.getJSONObject()
                                                                         .getJSONObject("data")

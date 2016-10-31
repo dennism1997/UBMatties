@@ -23,4 +23,17 @@ public enum SessionType {
                 return null;
         }
     }
+
+    public static int toInt(SessionType type) {
+        switch (type) {
+            case STUDY:
+                return 1;
+            case COFFEE:
+                return 2;
+            case LUNCH:
+                return 3;
+            default:
+                return 0;
+        }
+    }
 }
