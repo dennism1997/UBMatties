@@ -46,7 +46,9 @@ public class User extends Observable {
     }
 
     public Bitmap getImage() {
-        return image;
+        synchronized (this) {
+            return image;
+        }
     }
 
     public void setImage(Bitmap image) {

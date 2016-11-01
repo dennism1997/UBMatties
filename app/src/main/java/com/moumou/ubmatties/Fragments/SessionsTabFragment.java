@@ -69,6 +69,7 @@ public class SessionsTabFragment extends Fragment {
             @Override
             public void onRefresh() {
                 getSessionsFromDB();
+                sessionsListAdapter.notifyDataSetChanged();
             }
         });
     }
