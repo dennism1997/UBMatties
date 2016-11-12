@@ -5,13 +5,14 @@ import com.moumou.ubmatties.globals.SessionType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by MouMou on 06-10-16
  */
 
-public class Session {
+public class Session implements Serializable {
 
     private int id;
     private User host;
@@ -33,11 +34,24 @@ public class Session {
         this.host = MainActivity.getSelf();
     }
 
+    //    /**
+    //     * Creates a new session from a new empty list with self as host
+    //     */
+    //    public Session(SessionType type, LocalDate date, LocalTime startTime,
+    //                   LocalTime endTime) {
+    //        this.type = type;
+    //        this.date = date;
+    //        this.startTime = startTime;
+    //        this.endTime = endTime;
+    //        sessionUsers = new ArrayList<>();
+    //        this.host = MainActivity.getSelf();
+    //    }
+
     /**
      * Creates a new session from a new empty list with self as host
      */
-    public Session(SessionType type, LocalDate date, LocalTime startTime,
-                   LocalTime endTime) {
+    public Session(int id, SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.id = id;
         this.type = type;
         this.date = date;
         this.startTime = startTime;
@@ -46,11 +60,7 @@ public class Session {
         this.host = MainActivity.getSelf();
     }
 
-    /**
-     * Creates a new session from a new empty list with self as host
-     */
-    public Session(int id, SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime) {
-        this.id = id;
+    public Session(SessionType type, LocalDate date, LocalTime startTime, LocalTime endTime) {
         this.type = type;
         this.date = date;
         this.startTime = startTime;
@@ -124,7 +134,9 @@ public class Session {
         } else {
             return false;
         }
+    }
 
-
+    public int getId() {
+        return id;
     }
 }

@@ -1,71 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true"
-    android:layout_alignParentTop="true"
-    android:layout_marginLeft="0dp"
-    android:layout_marginStart="4dp"
-    android:orientation="horizontal"
-    android:padding="6dp">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_alignParentLeft="true"
+              android:layout_alignParentStart="true"
+              android:layout_alignParentTop="true"
+              android:layout_marginLeft="0dp"
+              android:layout_marginStart="4dp"
+              android:orientation="horizontal"
+              android:padding="6dp">
 
     <ImageView
         android:id="@+id/study_session_type_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_laptop_black_48dp" />
+        android:src="@drawable/ic_laptop_black_48dp"/>
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:minWidth="12dp" />
+        android:minWidth="12dp"/>
 
     <TextView
         android:id="@+id/study_session_date"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:gravity="fill_vertical"
         android:hint="03 dec"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:gravity="fill_vertical" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:minWidth="10dp" />
+        android:minWidth="10dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="fill_vertical">
+        android:gravity="fill_vertical"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/study_session_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="10:03"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="10:03"/>
 
         <TextView
             android:id="@+id/study_session_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="10:07"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="10:07"/>
+
+
     </LinearLayout>
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:minWidth="5dp" />
+        android:minWidth="5dp"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/image_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="horizontal"/>
 
 </LinearLayout>
 

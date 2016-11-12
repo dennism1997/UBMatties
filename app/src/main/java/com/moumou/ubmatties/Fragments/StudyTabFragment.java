@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,18 +23,17 @@ import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter;
 import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.moumou.ubmatties.Adapters.StudyListAdapter;
 import com.moumou.ubmatties.Dialog.AddUserDialog;
+import com.moumou.ubmatties.Loaders.AddSessionLoader;
+import com.moumou.ubmatties.Loaders.OwnSessionsLoader;
 import com.moumou.ubmatties.MainActivity;
 import com.moumou.ubmatties.R;
 import com.moumou.ubmatties.Session;
-import com.moumou.ubmatties.User;
 import com.moumou.ubmatties.globals.Globals;
 import com.moumou.ubmatties.globals.SessionType;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -53,7 +54,7 @@ import static com.moumou.ubmatties.globals.SessionType.STUDY;
  * Created by MouMou on 04-10-2016
  */
 
-public class StudyTabFragment extends Fragment implements View.OnClickListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener {
+public class StudyTabFragment extends Fragment implements View.OnClickListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener, LoaderManager.LoaderCallbacks {
 
     private static final String DATEPICKER_TAG = "NEW_DATE_PICKER";
     private static final String TIMEPICKER_TAG = "NEW_TIME_PICKER";
@@ -67,10 +68,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     private Animation rotate_forward;
     private Animation rotate_backward;
 
+
     private HttpURLConnection urlConnection;
     private URL dataBaseUrl;
-    private String JSON;
-
 
     private RadialTimePickerDialogFragment timePicker;
 
@@ -104,14 +104,18 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initListView(view);
+        studyListView = (ListView) view.findViewById(R.id.study_list);
+        initListView();
         initFab(view);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.study_swipe_container);
         initSwipeToRefresh();
 
+        getLoaderManager().initLoader(Globals.LOADER_GET_OWN_SESSIONS, null, this).forceLoad();
+
+
         if (MainActivity.getSelf() != null) {
-            getSessionsFromDB();
+            //getSessionsFromDB();
         }
     }
 
@@ -199,19 +203,56 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    private void initListView(View view) {
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        if (args == null) {
+            return new OwnSessionsLoader(getContext());
+        }
+        if (args.get(Globals.TAG_SESSION) != null) {
+            return new AddSessionLoader(getContext(), (Session) args.get(Globals.TAG_SESSION));
+        } else {
+            return new OwnSessionsLoader(getContext());
+        }
+    }
 
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        if (data == null) {
+            return;
+        }
+
+        if (data instanceof ArrayList) {
+            ArrayList list = (ArrayList) data;
+
+            studyListAdapter.clear();
+            for (int i = 0; i < list.size(); i++) {
+                sessionList.add((Session) list.get(i));
+            }
+        } else if (data instanceof Boolean) {
+            if (!(Boolean) data) {
+                MainActivity.showAlertDialog("Can't insert session into Database");
+            }
+            getSessionsFromDB();
+        }
+
+        studyListAdapter.notifyDataSetChanged();
+        swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+    private void initListView() {
         if (sessionList == null) {
             sessionList = new ArrayList<>();
-            ArrayList<User> sessionUsers = new ArrayList<>();
-            sessionUsers.add(new User("Tom", "5343432"));
-            sessionUsers.add(new User("Dennis", "5343432"));
-            sessionUsers.add(new User("Stephan", "5343432"));
-            sessionUsers.add(new User("Vink", "5343432"));
-            sessionUsers.add(new User("Abba", "5343432"));
         }
+        sessionList.add(new Session(COFFEE,
+                                    LocalDate.now(),
+                                    LocalTime.now(),
+                                    LocalTime.now().plusHours(1)));
         studyListAdapter = new StudyListAdapter(getContext(), sessionList);
-        studyListView = (ListView) view.findViewById(R.id.study_list);
         studyListView.setAdapter(studyListAdapter);
 
         studyListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -249,7 +290,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void addSession() {
-        Session session = new Session(newType, newDate, newStart, newEnd);
+        Session session = new Session(0, newType, newDate, newStart, newEnd);
         if (!newEnd.isAfter(newStart)) {
             MainActivity.showAlertDialog("End time is earlier than the start time");
             return;
@@ -288,6 +329,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         typeDialog.dismiss();
                         studyListAdapter.notifyDataSetChanged();
                         type.setText(getString(R.string.type_study));
+                        updateSession(session);
                     }
                 });
 
@@ -298,6 +340,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         typeDialog.dismiss();
                         studyListAdapter.notifyDataSetChanged();
                         type.setText(getString(R.string.type_lunch));
+                        updateSession(session);
                     }
                 });
 
@@ -308,6 +351,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         typeDialog.dismiss();
                         studyListAdapter.notifyDataSetChanged();
                         type.setText(getString(R.string.type_coffee));
+                        updateSession(session);
                     }
                 });
                 typeDialog.show();
@@ -336,6 +380,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         session.setDate(new LocalDate(year, monthOfYear + 1, dayOfMonth));
                         studyListAdapter.notifyDataSetChanged();
                         date.setText(session.getDate().toString("dd MMM"));
+                        updateSession(session);
                     }
                 });
             }
@@ -359,6 +404,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         session.setStartTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
                         startTime.setText(session.getStartTime().toString("HH:mm"));
+                        updateSession(session);
                     }
                 });
             }
@@ -382,6 +428,7 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                         session.setEndTime(new LocalTime(hourOfDay, minute));
                         studyListAdapter.notifyDataSetChanged();
                         endTime.setText(session.getEndTime().toString("HH:mm"));
+                        updateSession(session);
                     }
                 });
             }
@@ -443,6 +490,18 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void getSessionsFromDB() {
+        getLoaderManager().getLoader(Globals.LOADER_GET_OWN_SESSIONS).forceLoad();
+    }
+
+
+
+    private void addSessionToDB(final Session s) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("session", s);
+        getLoaderManager().initLoader(Globals.LOADER_ADD_SESSION, bundle, this).forceLoad();
+    }
+
+    private void updateSession(final Session s) {
         class GetJSONData extends AsyncTask<String, Void, String> {
 
             @Override
@@ -450,8 +509,12 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                 String result = null;
 
                 try {
-                    dataBaseUrl = new URL(
-                            Globals.DB_SESSIONS_FROM_USER_URL + MainActivity.getSelf().getId());
+                    dataBaseUrl = new URL(Globals.DB_UPDATE_SESSION + s.getId() + "&hostid=" +
+                                          s.getHost().getId() + "&type=" +
+                                          SessionType.toInt(s.getType()) + "&date=" +
+                                          s.getDate().toString("YYYY-MM-dd") + "&start=" +
+                                          s.getStartTime().toString("HH:mm:ss") + "&end=" +
+                                          s.getEndTime().toString("HH:mm:ss"));
                     urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
@@ -463,12 +526,12 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
                     }
                     result = sb.toString();
                 } catch (NullPointerException e) {
-                    MainActivity.showAlertDialog("Are you logged in to facebook yet?");
+                    MainActivity.showAlertDialog("Can't modify session");
+                    e.printStackTrace();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    System.err.println(result);
                 } finally {
                     if (urlConnection != null) {
                         urlConnection.disconnect();
@@ -480,82 +543,9 @@ public class StudyTabFragment extends Fragment implements View.OnClickListener, 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                if (s != null) {
-                    JSON = s;
-                    parseJSONtoSessionList();
-                    swipeContainer.setRefreshing(false);
-                } else {
-                    swipeContainer.setRefreshing(false);
+                if (!s.equals("success\n")) {
+                    MainActivity.showAlertDialog(s);
                 }
-            }
-        }
-        GetJSONData g = new GetJSONData();
-        g.execute();
-    }
-
-    private void parseJSONtoSessionList() {
-        sessionList.clear();
-
-        try {
-            JSONObject jsonObject = new JSONObject(JSON);
-            JSONArray array = jsonObject.getJSONArray(Globals.TAG_USER);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject o = array.getJSONObject(i);
-
-                int id = Integer.valueOf(o.getString(Globals.TAG_ID));
-                SessionType type = SessionType.fromInt(Integer.valueOf(o.getString(Globals.TAG_TYPE)));
-                LocalDate date = LocalDate.parse(o.getString(Globals.TAG_DATE));
-                LocalTime start = LocalTime.parse(o.getString(Globals.TAG_START));
-                LocalTime end = LocalTime.parse(o.getString(Globals.TAG_END));
-                Session s = new Session(id, type, date, start, end);
-                sessionList.add(s);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(JSON);
-        } finally {
-            studyListAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void addSessionToDB(final Session s) {
-        class GetJSONData extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-                String result = null;
-
-                try {
-                    dataBaseUrl = new URL(
-                            Globals.DB_INSERT_SESSION + s.getHost().getId() + "&type=" +
-                            SessionType.toInt(s.getType()) + "&date=" +
-                            s.getDate().toString("YYYY-MM-dd") + "&start=" +
-                            s.getStartTime().toString("HH:mm:ss") + "&end=" +
-                            s.getEndTime().toString("HH:mm:ss"));
-                    urlConnection = (HttpURLConnection) dataBaseUrl.openConnection();
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line).append("\n");
-                    }
-                    result = sb.toString();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.err.println(result);
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                }
-                return result;
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
                 getSessionsFromDB();
             }
         }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +28,6 @@ import java.util.Observer;
 public class SessionsListAdapter extends ArrayAdapter<Session> implements Observer {
 
     private List<Session> sessionList;
-    private RecyclerView imageListView;
     private ImageRowAdapter imageRowAdapter;
 
     public SessionsListAdapter(Context context, List<Session> sessionList) {
@@ -53,8 +50,8 @@ public class SessionsListAdapter extends ArrayAdapter<Session> implements Observ
         TextView date = (TextView) view.findViewById(R.id.study_session_date);
         TextView start = (TextView) view.findViewById(R.id.study_session_start);
         TextView end = (TextView) view.findViewById(R.id.study_session_end);
-        imageListView = (RecyclerView) view.findViewById(R.id.image_wrapper);
-        initImageListView(view, position);
+
+        //initImageListView(view, position);
 
         imageView.setImageBitmap(getBitmap(session.getType()));
         date.setText(session.getDate().toString("dd MMM"));
@@ -82,13 +79,7 @@ public class SessionsListAdapter extends ArrayAdapter<Session> implements Observ
                 imageList.add(u.getImage());
             }
         }
-
-        imageRowAdapter = new ImageRowAdapter(imageList);
-        imageListView.setAdapter(imageRowAdapter);
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(view.getContext(),
-                                                                     LinearLayoutManager.HORIZONTAL,
-                                                                     false);
-        imageListView.setLayoutManager(manager);
+        imageRowAdapter = new ImageRowAdapter(view.getContext(), R.layout.image_row, imageList);
     }
 
     private Bitmap getBitmap(SessionType type) {
@@ -117,5 +108,10 @@ public class SessionsListAdapter extends ArrayAdapter<Session> implements Observ
     public void update(Observable observable, Object o) {
         notifyDataSetChanged();
         imageRowAdapter.notifyDataSetChanged();
+    }
+
+    public void setSessionList(ArrayList<Session> list) {
+        this.sessionList = list;
+        notifyDataSetChanged();
     }
 }
